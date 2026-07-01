@@ -53,6 +53,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
   const [editName, setEditName] = useState('');
   const [editRole, setEditRole] = useState<'admin' | 'cajero'>('cajero');
   const [editActive, setEditActive] = useState(true);
+  const [deactivatingUser, setDeactivatingUser] = useState<User | null>(null);
 
   // Load prices
   const loadPrices = async () => {
@@ -216,11 +217,14 @@ export default function AdminPanel({ token }: AdminPanelProps) {
     }
   };
 
-  const handleDeactivateUser = async (user: User) => {
-    if (!window.confirm(`¿Está seguro de deactivar la cuenta de "${user.name}"? El operador ya no podrá acceder al sistema.`)) {
-      return;
-    }
+  const handleDeactivateUser = (user: User) => {
+    setDeactivatingUser(user);
+  };
 
+  const executeDeactivateUser = async () => {
+    if (!deactivatingUser) return;
+    const user = deactivatingUser;
+    setDeactivatingUser(null);
     setUserError(null);
     setUserSuccess(null);
 
@@ -606,6 +610,45 @@ export default function AdminPanel({ token }: AdminPanelProps) {
         </div>
 
       </div>
+
+      {/* Confirmation Modal for deactivating user */}
+      {deactivatingUser && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-6 animate-scaleUp">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+              <div className="p-2 bg-red-50 rounded-xl text-red-500">
+                <UserX className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-display font-bold text-slate-800 text-base">¿Desactivar Operador?</h4>
+                <p className="text-[11px] text-slate-400">Desactivar cuenta de operador en el sistema.</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              ¿Está seguro de desactivar la cuenta de <span className="font-bold text-slate-800">"{deactivatingUser.name}"</span>? 
+              El operador ya no podrá acceder al sistema de boletería ni registrar nuevas transacciones.
+            </p>
+
+            <div className="flex gap-3 justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setDeactivatingUser(null)}
+                className="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={executeDeactivateUser}
+                className="px-4 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer"
+              >
+                Desactivar Cuenta
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

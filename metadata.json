@@ -1,0 +1,6 @@
+{
+  "name": "Gestión Ventas Punta Loma",
+  "description": "Sistema de gestión de venta de entradas para el Área Natural Protegida Punta Loma en Puerto Madryn, Chubut, Argentina.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

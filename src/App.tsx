@@ -5,8 +5,6 @@ import TicketVenta from './components/TicketVenta';
 import TicketValidador from './components/TicketValidador';
 import Reports from './components/Reports';
 import AdminPanel from './components/AdminPanel';
-import UserProfile from './components/UserProfile';
-import UserAvatar from './components/UserAvatar';
 import { Caja } from './types';
 import { 
   LogOut, 
@@ -24,14 +22,7 @@ import LoboMarinoIcon from './components/LoboMarinoIcon';
 
 export default function App() {
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<{ 
-    id: string; 
-    username: string; 
-    role: 'admin' | 'cajero'; 
-    name: string; 
-    avatar?: string; 
-    recoveryHint?: string; 
-  } | null>(null);
+  const [user, setUser] = useState<{ id: string; username: string; role: 'admin' | 'cajero'; name: string } | null>(null);
   const [openCaja, setOpenCaja] = useState<Caja | null>(null);
   const [activeTab, setActiveTab] = useState<string>('venta');
   const [appLoading, setAppLoading] = useState(true);
@@ -255,16 +246,10 @@ export default function App() {
 
         {/* Profile and Logout area */}
         <div className="p-4 bg-emerald-950/60 border-t border-emerald-900/60 shrink-0 space-y-3">
-          <div 
-            onClick={() => setActiveTab('perfil')}
-            className={`flex items-center gap-2.5 p-2 rounded-xl cursor-pointer hover:bg-emerald-900/40 transition-colors border ${
-              activeTab === 'perfil' 
-                ? 'bg-emerald-900/60 border-emerald-850' 
-                : 'border-transparent'
-            }`}
-            title="Ver configuración de perfil"
-          >
-            <UserAvatar avatar={user.avatar} name={user.name} size="sm" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center justify-center italic uppercase shrink-0">
+              {user.name ? user.name.slice(0, 2).toUpperCase() : 'OP'}
+            </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-bold text-white truncate">{user.name}</p>
               <p className="text-[10px] text-emerald-400/80 truncate font-semibold tracking-wide">
@@ -361,17 +346,6 @@ export default function App() {
 
             {activeTab === 'admin' && user.role === 'admin' && (
               <AdminPanel token={token} />
-            )}
-
-            {activeTab === 'perfil' && (
-              <UserProfile 
-                token={token} 
-                user={user} 
-                onProfileUpdate={(updatedUser) => {
-                  setUser(updatedUser);
-                  localStorage.setItem('pl_user', JSON.stringify(updatedUser));
-                }}
-              />
             )}
           </div>
         </main>

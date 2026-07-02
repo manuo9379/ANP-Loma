@@ -17,8 +17,6 @@ export interface User {
   role: 'admin' | 'cajero';
   name: string;
   active: boolean;
-  avatar?: string;
-  recoveryHint?: string;
 }
 
 export interface Caja {
@@ -128,9 +126,9 @@ export function initializeDatabase() {
 
   // 2. Users
   const defaultUsers: User[] = [
-    { id: 'usr-1', username: 'admin', password: 'admin123', role: 'admin', name: 'Administrador de Área', active: true, avatar: 'lobo', recoveryHint: 'Clave por defecto de administrador' },
-    { id: 'usr-2', username: 'cajero1', password: 'cajero123', role: 'cajero', name: 'Juan Pérez', active: true, avatar: 'pinguino', recoveryHint: 'Clave por defecto de cajero 1' },
-    { id: 'usr-3', username: 'cajero2', password: 'cajero123', role: 'cajero', name: 'María Gómez', active: true, avatar: 'ballena', recoveryHint: 'Clave por defecto de cajero 2' }
+    { id: 'usr-1', username: 'admin', password: 'admin123', role: 'admin', name: 'Administrador de Área', active: true },
+    { id: 'usr-2', username: 'cajero1', password: 'cajero123', role: 'cajero', name: 'Juan Pérez', active: true },
+    { id: 'usr-3', username: 'cajero2', password: 'cajero123', role: 'cajero', name: 'María Gómez', active: true }
   ];
   const users = readJSON<User[]>(USERS_FILE, defaultUsers);
   // Ensure default users exist if file was empty

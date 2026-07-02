@@ -48,7 +48,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
 
   return (
     <div id="login_container" className="min-h-[85vh] flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
         
         {/* Decorative Brand Header */}
         <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 px-6 py-8 text-white text-center relative">
@@ -67,7 +67,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 p-3.5 rounded-xl text-sm flex items-start gap-2.5 animate-fadeIn">
+            <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 text-red-700 dark:text-red-400 p-3.5 rounded-xl text-sm flex items-start gap-2.5 animate-fadeIn">
               <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-red-500" />
               <span>{error}</span>
             </div>
@@ -75,7 +75,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
 
           {/* Username Input */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-700 tracking-wide uppercase block">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide uppercase block">
               Nombre de Usuario
             </label>
             <div className="relative">
@@ -88,7 +88,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 placeholder="Ej: cajero1 o admin"
                 autoComplete="username"
               />
@@ -98,7 +98,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           {/* Password Input */}
           <div className="space-y-1.5">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-semibold text-slate-700 tracking-wide uppercase block">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide uppercase block">
                 Contraseña
               </label>
             </div>
@@ -112,14 +112,14 @@ export default function Login({ onLoginSuccess }: LoginProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
-                className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 placeholder="••••••••"
                 autoComplete="current-password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition-colors"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -127,11 +127,11 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           </div>
 
           {/* Help Information (Humblest indicator) */}
-          <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs text-slate-500 space-y-1">
-            <span className="font-semibold block text-slate-600">Usuarios por defecto:</span>
+          <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-xl p-3 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+            <span className="font-semibold block text-slate-600 dark:text-slate-300">Usuarios por defecto:</span>
             <div className="flex justify-between">
-              <span>Admin: <code className="bg-slate-200 px-1 rounded text-[10px]">admin</code> / <code className="bg-slate-200 px-1 rounded text-[10px]">admin123</code></span>
-              <span>Cajero: <code className="bg-slate-200 px-1 rounded text-[10px]">cajero1</code> / <code className="bg-slate-200 px-1 rounded text-[10px]">cajero123</code></span>
+              <span>Admin: <code className="bg-slate-200 dark:bg-slate-700 dark:text-slate-200 px-1 rounded text-[10px]">admin</code> / <code className="bg-slate-200 dark:bg-slate-700 dark:text-slate-200 px-1 rounded text-[10px]">admin123</code></span>
+              <span>Cajero: <code className="bg-slate-200 dark:bg-slate-700 dark:text-slate-200 px-1 rounded text-[10px]">cajero1</code> / <code className="bg-slate-200 dark:bg-slate-700 dark:text-slate-200 px-1 rounded text-[10px]">cajero123</code></span>
             </div>
           </div>
 
@@ -154,8 +154,8 @@ export default function Login({ onLoginSuccess }: LoginProps) {
         </form>
 
         {/* Footer */}
-        <div className="bg-slate-50 px-6 py-4 border-t border-slate-100 text-center">
-          <p className="text-[11px] text-slate-400">
+        <div className="bg-slate-50 dark:bg-slate-900 px-6 py-4 border-t border-slate-100 dark:border-slate-800 text-center">
+          <p className="text-[11px] text-slate-400 dark:text-slate-500">
             Provincia del Chubut • Ministerio de Turismo y Áreas Protegidas
           </p>
         </div>

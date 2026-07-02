@@ -14,7 +14,9 @@ import {
   BarChart3, 
   Settings, 
   User as UserIcon,
-  Compass
+  Compass,
+  Sun,
+  Moon
 } from 'lucide-react';
 import LoboMarinoIcon from './components/LoboMarinoIcon';
 
@@ -24,6 +26,20 @@ export default function App() {
   const [openCaja, setOpenCaja] = useState<Caja | null>(null);
   const [activeTab, setActiveTab] = useState<string>('venta');
   const [appLoading, setAppLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
+
+  // Apply dark class to document
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
 
   // Restore session on mount
   useEffect(() => {
@@ -105,9 +121,9 @@ export default function App() {
 
   if (appLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center space-y-4">
-        <Compass className="w-12 h-12 text-emerald-600 animate-spin" />
-        <span className="text-slate-500 font-medium text-sm font-display">Iniciando Boletería Punta Loma...</span>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center space-y-4">
+        <Compass className="w-12 h-12 text-emerald-600 dark:text-emerald-400 animate-spin" />
+        <span className="text-slate-500 dark:text-slate-400 font-medium text-sm font-display">Iniciando Boletería Punta Loma...</span>
       </div>
     );
   }
@@ -115,12 +131,12 @@ export default function App() {
   // Render Login page if not authenticated
   if (!token || !user) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-between">
         <div className="flex-1 flex items-center justify-center">
           <Login onLoginSuccess={handleLoginSuccess} />
         </div>
-        <footer className="bg-slate-100 py-4 text-center border-t border-slate-200">
-          <p className="text-xs text-slate-400">
+        <footer className="bg-slate-100 dark:bg-slate-900 py-4 text-center border-t border-slate-200 dark:border-slate-800">
+          <p className="text-xs text-slate-400 dark:text-slate-500">
             ANP Punta Loma - Sistema de Control y Boletería Digital • Puerto Madryn, Chubut, Argentina
           </p>
         </footer>
@@ -134,10 +150,10 @@ export default function App() {
 
   // Main application view
   return (
-    <div className="flex h-screen w-full bg-slate-100 overflow-hidden font-sans text-slate-700">
+    <div className="flex h-screen w-full bg-slate-100 dark:bg-slate-950 overflow-hidden font-sans text-slate-700 dark:text-slate-200">
       
       {/* SIDEBAR - HIDDEN IN PRINT */}
-      <aside className="w-60 bg-emerald-950 text-emerald-50 flex flex-col shrink-0 border-r border-emerald-900/40 noprint">
+      <aside className="w-60 bg-emerald-950 dark:bg-slate-900 text-emerald-50 flex flex-col shrink-0 border-r border-emerald-900/40 dark:border-slate-800/40 noprint">
         {/* Brand Header */}
         <div className="p-5 border-b border-emerald-900/60 shrink-0">
           <div className="flex items-center gap-2.5">
@@ -255,19 +271,19 @@ export default function App() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {/* HEADER STATS BAR - HIGH DENSITY SPECS */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 noprint z-10">
+        <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 noprint z-10">
           {/* Header statistics info */}
           <div className="flex items-center gap-8">
             <div className="flex flex-col">
-              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider leading-none">Total Recaudado (Turno)</span>
-              <span className="text-xl font-black text-emerald-700 leading-tight mt-1">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider leading-none">Total Recaudado (Turno)</span>
+              <span className="text-xl font-black text-emerald-700 dark:text-emerald-400 leading-tight mt-1">
                 {openCaja ? formatCurrency(openCaja.currentSales) : '$0,00'}
               </span>
             </div>
-            <div className="h-8 border-r border-slate-200"></div>
+            <div className="h-8 border-r border-slate-200 dark:border-slate-800"></div>
             <div className="flex flex-col">
-              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider leading-none">Entradas Emitidas</span>
-              <span className="text-xl font-black text-slate-700 leading-tight mt-1">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider leading-none">Entradas Emitidas</span>
+              <span className="text-xl font-black text-slate-700 dark:text-slate-300 leading-tight mt-1">
                 {openCaja ? openCaja.salesCount : '0'}
               </span>
             </div>
@@ -275,19 +291,33 @@ export default function App() {
 
           {/* Active status elements */}
           <div className="flex items-center gap-4">
-            <div className="px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full text-emerald-700 text-[10px] font-bold flex items-center gap-1.5 uppercase tracking-wide">
+            {/* Elegant Mode Toggle */}
+            <button
+              type="button"
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer flex items-center justify-center border border-transparent hover:border-slate-200 dark:hover:border-slate-750"
+              title={darkMode ? "Cambiar a Modo Claro" : "Cambiar a Modo Nocturno"}
+            >
+              {darkMode ? (
+                <Sun className="w-4 h-4 text-amber-500" />
+              ) : (
+                <Moon className="w-4 h-4 text-slate-600" />
+              )}
+            </button>
+            <span className="text-slate-300 dark:text-slate-700">|</span>
+            <div className="px-3 py-1 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 rounded-full text-emerald-700 dark:text-emerald-400 text-[10px] font-bold flex items-center gap-1.5 uppercase tracking-wide">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
               Boletería Online
             </div>
-            <span className="text-slate-300">|</span>
-            <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-tight">
+            <span className="text-slate-300 dark:text-slate-700">|</span>
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-tight">
               {new Date().toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
             </span>
           </div>
         </header>
 
         {/* WORKSPACE AREA */}
-        <main className="flex-1 overflow-y-auto p-5 scroll-smooth bg-slate-100">
+        <main className="flex-1 overflow-y-auto p-5 scroll-smooth bg-slate-100 dark:bg-slate-950">
           <div className="max-w-7xl mx-auto">
             {activeTab === 'venta' && (
               <TicketVenta 
@@ -321,9 +351,9 @@ export default function App() {
         </main>
 
         {/* FOOTER STATUS BAR - HIGH DENSITY STYLE */}
-        <footer className="h-8 bg-slate-200 border-t border-slate-300 px-6 flex items-center justify-between text-[10px] font-medium text-slate-500 shrink-0 noprint">
+        <footer className="h-8 bg-slate-200 dark:bg-slate-900 border-t border-slate-300 dark:border-slate-800 px-6 flex items-center justify-between text-[10px] font-medium text-slate-500 dark:text-slate-400 shrink-0 noprint">
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 font-bold text-emerald-700">
+            <span className="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-400">
               <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
               SISTEMA ONLINE
             </span>

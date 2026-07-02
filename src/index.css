@@ -5,3 +5,231 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", sans-serif;
 }
+
+/* -------------------------------------------------------------------------- */
+/* SMOOTH TRANSITIONS                                                         */
+/* -------------------------------------------------------------------------- */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Disable transitions on print elements and animated spins */
+.animate-spin, .animate-pulse {
+  transition: none !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* GLOBAL DARK MODE OVERRIDES (HIGH FIDELITY)                                */
+/* -------------------------------------------------------------------------- */
+
+.dark {
+  color-scheme: dark;
+}
+
+/* Background Color Overrides */
+.dark body, 
+.dark #root {
+  background-color: #0b0f19 !important; /* Deeper slate dark */
+}
+
+.dark .bg-white {
+  background-color: #111827 !important; /* slate-900 / gray-900 */
+}
+
+.dark .bg-slate-50 {
+  background-color: #1f2937 !important; /* slate-800 */
+}
+
+.dark .bg-slate-100 {
+  background-color: #0b0f19 !important; /* slate-950 matching background */
+}
+
+.dark .bg-emerald-50 {
+  background-color: rgba(6, 78, 59, 0.2) !important; /* Emerald-950/20 transparent */
+}
+
+.dark .bg-red-50 {
+  background-color: rgba(153, 27, 27, 0.2) !important; /* Red-900/20 transparent */
+}
+
+.dark .bg-amber-50 {
+  background-color: rgba(120, 53, 4, 0.2) !important; /* Amber-950/20 transparent */
+}
+
+/* Border Overrides */
+.dark .border-slate-50,
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-slate-300,
+.dark .border-dashed {
+  border-color: #374151 !important; /* slate-700 */
+}
+
+.dark .border-emerald-100,
+.dark .border-emerald-200 {
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.dark .border-red-100,
+.dark .border-red-200 {
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.dark .border-amber-100,
+.dark .border-amber-200 {
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Text Overrides */
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-750 {
+  color: #f9fafb !important; /* Gray-50 */
+}
+
+.dark .text-slate-700,
+.dark .text-slate-600 {
+  color: #f3f4f6 !important; /* Gray-100 */
+}
+
+.dark .text-slate-500 {
+  color: #d1d5db !important; /* Gray-300 */
+}
+
+.dark .text-slate-400 {
+  color: #9ca3af !important; /* Gray-400 */
+}
+
+.dark .text-emerald-800 {
+  color: #a7f3d0 !important; /* Emerald-200 */
+}
+
+.dark .text-emerald-700 {
+  color: #34d399 !important; /* Emerald-400 */
+}
+
+.dark .text-red-800,
+.dark .text-red-700 {
+  color: #fca5a5 !important; /* Red-300 */
+}
+
+.dark .text-amber-800,
+.dark .text-amber-750 {
+  color: #fde047 !important; /* Yellow-300 */
+}
+
+/* Dividers */
+.dark .divide-slate-100 > * + * {
+  border-color: #374151 !important;
+}
+
+.dark .divide-slate-200 > * + * {
+  border-color: #374151 !important;
+}
+
+/* Forms and Inputs */
+.dark input, 
+.dark select, 
+.dark textarea {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  border-color: #374151 !important;
+}
+
+.dark input:focus, 
+.dark select:focus, 
+.dark textarea:focus {
+  border-color: #10b981 !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+}
+
+.dark input::placeholder {
+  color: #9ca3af !important;
+  opacity: 0.6;
+}
+
+/* Dropdown list items inside select */
+.dark select option {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+}
+
+/* Tables and lists */
+.dark table {
+  background-color: #111827 !important;
+}
+
+.dark thead {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+.dark tr {
+  border-color: #374151 !important;
+}
+
+.dark tr:hover {
+  background-color: rgba(31, 41, 55, 0.5) !important; /* Hover effect */
+}
+
+.dark th {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+  border-color: #374151 !important;
+}
+
+.dark td {
+  border-color: #374151 !important;
+}
+
+/* Interactive custom components */
+.dark .hover\:bg-slate-50:hover {
+  background-color: #1f2937 !important;
+}
+
+/* Badge and specific indicator styles */
+.dark .bg-slate-200 {
+  background-color: #374151 !important;
+  color: #f3f4f6 !important;
+}
+
+.dark .text-slate-600 {
+  color: #d1d5db !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* RECHARTS COMPATIBILITY                                                     */
+/* -------------------------------------------------------------------------- */
+.dark .recharts-cartesian-grid line {
+  stroke: #374151 !important;
+  stroke-dasharray: 3 3;
+}
+
+.dark .recharts-text {
+  fill: #9ca3af !important;
+  font-size: 10px;
+}
+
+.dark .recharts-legend-item-text {
+  color: #e5e7eb !important;
+}
+
+.dark .recharts-default-tooltip {
+  background-color: #111827 !important;
+  border: 1px solid #374151 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .recharts-tooltip-label {
+  color: #f9fafb !important;
+  font-weight: 600 !important;
+}
+
+.dark .recharts-tooltip-item-name,
+.dark .recharts-tooltip-item-value {
+  color: #d1d5db !important;
+}

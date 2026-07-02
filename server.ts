@@ -13,6 +13,8 @@ declare global {
         username: string;
         role: 'admin' | 'cajero';
         name: string;
+        avatar?: string;
+        recoveryHint?: string;
       };
     }
   }
@@ -24,6 +26,8 @@ const SESSIONS = new Map<string, {
   username: string;
   role: 'admin' | 'cajero';
   name: string;
+  avatar?: string;
+  recoveryHint?: string;
 }>();
 
 async function startServer() {
@@ -88,7 +92,9 @@ async function startServer() {
       id: user.id,
       username: user.username,
       role: user.role,
-      name: user.name
+      name: user.name,
+      avatar: user.avatar,
+      recoveryHint: user.recoveryHint
     };
     SESSIONS.set(token, sessionUser);
 
@@ -109,6 +115,88 @@ async function startServer() {
       SESSIONS.delete(token);
     }
     res.json({ message: 'Sesión cerrada' });
+  });
+
+  // 1b. Profile API
+  app.put('/api/auth/profile', requireAuth, (req: Request, res: Response) => {
+    const { name, avatar, recoveryHint, currentPassword, newPassword } = req.body;
+    const userId = req.user!.id;
+
+    const users = db.getUsers();
+    const userIndex = users.findIndex(u => u.id === userId);
+    if (userIndex === -1) {
+      res.status(404).json({ error: 'Usuario no encontrado' });
+      return;
+    }
+
+    // Check password if trying to update password
+    if (newPassword) {
+      const fullUser = db.getUserWithPassword(req.user!.username);
+      if (!fullUser || fullUser.password !== currentPassword) {
+        res.status(400).json({ error: 'La contraseña actual es incorrecta.' });
+        return;
+      }
+      users[userIndex].password = newPassword;
+    }
+
+    if (name) {
+      users[userIndex].name = name;
+      req.user!.name = name;
+    }
+
+    if (avatar) {
+      users[userIndex].avatar = avatar;
+      req.user!.avatar = avatar;
+    }
+
+    if (recoveryHint !== undefined) {
+      users[userIndex].recoveryHint = recoveryHint;
+      req.user!.recoveryHint = recoveryHint;
+    }
+
+    db.saveUsers(users);
+
+    // Update session memory
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      const session = SESSIONS.get(token);
+      if (session) {
+        if (name) session.name = name;
+        if (avatar) session.avatar = avatar;
+        if (recoveryHint !== undefined) session.recoveryHint = recoveryHint;
+        SESSIONS.set(token, session);
+      }
+    }
+
+    res.json({
+      message: 'Perfil actualizado exitosamente',
+      user: {
+        id: users[userIndex].id,
+        username: users[userIndex].username,
+        role: users[userIndex].role,
+        name: users[userIndex].name,
+        avatar: users[userIndex].avatar,
+        recoveryHint: users[userIndex].recoveryHint
+      }
+    });
+  });
+
+  // 1c. Public password recovery hint API
+  app.get('/api/auth/recovery-hint/:username', (req: Request, res: Response) => {
+    const { username } = req.params;
+    if (!username) {
+      res.status(400).json({ error: 'Nombre de usuario requerido.' });
+      return;
+    }
+    const user = db.getUserWithPassword(username);
+    if (!user) {
+      res.status(404).json({ error: 'Usuario no encontrado o inactivo.' });
+      return;
+    }
+    res.json({
+      hint: user.recoveryHint || 'No hay ninguna pista configurada para este usuario. Contacte al administrador.'
+    });
   });
 
   // 2. Settings / Prices API

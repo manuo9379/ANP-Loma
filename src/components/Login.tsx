@@ -51,7 +51,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
       <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
         
         {/* Decorative Brand Header */}
-        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 px-6 py-8 text-white text-center relative">
+        <div className="bg-gradient-to-r from-emerald-600 to-orange-500 px-6 py-8 text-white text-center relative">
           <div className="absolute top-3 right-3 bg-white/10 px-2 py-0.5 rounded text-[10px] font-mono tracking-wider">
             ANP PUNTA LOMA
           </div>

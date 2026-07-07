@@ -1,0 +1,8 @@
+{
+  "ticketPrices": {
+    "extranjero": 10000,
+    "nacional": 5000,
+    "residente": 2500,
+    "minor": 0
+  }
+}

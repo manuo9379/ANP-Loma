@@ -1,7 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
-import { createServer as createViteServer } from 'vite';
 import QRCode from 'qrcode';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import * as db from './db/database';
 
 // Extend Express Request interface to include session info
@@ -18,13 +19,7 @@ declare global {
   }
 }
 
-// Memory session store
-const SESSIONS = new Map<string, {
-  id: string;
-  username: string;
-  role: 'admin' | 'cajero';
-  name: string;
-}>();
+const JWT_SECRET = process.env.JWT_SECRET || 'punta-loma-mr-roboto-secure-key';
 
 async function startServer() {
   const app = express();
@@ -36,14 +31,21 @@ async function startServer() {
   // Middleware
   app.use(express.json());
 
-  // CORS-like / Auth extraction middleware
+  // CORS-like / Auth extraction middleware using JWT
   app.use((req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
-      const session = SESSIONS.get(token);
-      if (session) {
-        req.user = session;
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET) as any;
+        req.user = {
+          id: decoded.id,
+          username: decoded.username,
+          role: decoded.role,
+          name: decoded.name
+        };
+      } catch (err) {
+        // Token invalid or expired, proceed silently
       }
     }
     next();
@@ -77,20 +79,27 @@ async function startServer() {
     }
 
     const user = db.getUserWithPassword(username);
-    if (!user || user.password !== password) {
+    if (!user || !user.password) {
       res.status(401).json({ error: 'Credenciales inválidas o usuario inactivo' });
       return;
     }
 
-    // Create session token
-    const token = `tok-${Math.random().toString(36).substring(2)}${Date.now().toString(36)}`;
+    // Verify bcrypt password
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    if (!isPasswordValid) {
+      res.status(401).json({ error: 'Credenciales inválidas o usuario inactivo' });
+      return;
+    }
+
     const sessionUser = {
       id: user.id,
       username: user.username,
       role: user.role,
       name: user.name
     };
-    SESSIONS.set(token, sessionUser);
+
+    // Sign expirable JWT
+    const token = jwt.sign(sessionUser, JWT_SECRET, { expiresIn: '8h' });
 
     res.json({
       token,
@@ -103,11 +112,6 @@ async function startServer() {
   });
 
   app.post('/api/auth/logout', (req: Request, res: Response) => {
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      SESSIONS.delete(token);
-    }
     res.json({ message: 'Sesión cerrada' });
   });
 
@@ -145,24 +149,48 @@ async function startServer() {
   app.post('/api/users', requireAuth, requireAdmin, (req: Request, res: Response) => {
     const { username, password, name, role } = req.body;
     if (!username || !password || !name || !role) {
-      res.status(400).json({ error: 'Todos los campos son obligatorios' });
+      res.status(400).json({ error: 'Todos los campos (usuario, contraseña, nombre y rol) son obligatorios' });
+      return;
+    }
+
+    const trimmedUsername = username.trim();
+    const trimmedName = name.trim();
+
+    const usernameRegex = /^[a-zA-Z0-9._]+$/;
+    if (trimmedUsername.length < 3 || trimmedUsername.length > 20 || !usernameRegex.test(trimmedUsername)) {
+      res.status(422).json({ error: 'El nombre de usuario debe tener entre 3 y 20 caracteres y contener solo letras, números, puntos o guiones bajos.' });
+      return;
+    }
+
+    if (password.length < 6) {
+      res.status(422).json({ error: 'La contraseña debe tener al menos 6 caracteres.' });
+      return;
+    }
+
+    if (trimmedName.length < 2 || trimmedName.length > 50) {
+      res.status(422).json({ error: 'El nombre completo debe tener entre 2 y 50 caracteres.' });
+      return;
+    }
+
+    if (role !== 'admin' && role !== 'cajero') {
+      res.status(422).json({ error: 'El rol especificado es inválido.' });
       return;
     }
 
     const users = db.getUsers();
     // Check if duplicate
-    const exists = db.getUserWithPassword(username);
+    const exists = db.getUserWithPassword(trimmedUsername);
     if (exists) {
-      res.status(400).json({ error: 'El nombre de usuario ya está registrado' });
+      res.status(422).json({ error: 'El nombre de usuario ya está registrado' });
       return;
     }
 
     const newUser: db.User = {
       id: `usr-${Date.now()}`,
-      username,
+      username: trimmedUsername,
       password,
       role,
-      name,
+      name: trimmedName,
       active: true
     };
 
@@ -182,15 +210,47 @@ async function startServer() {
       return;
     }
 
-    const existingUsersFile = db.getUsers();
-    const exUser = existingUsersFile.find(u => u.id === userId)!;
+    const exUser = users[userIndex];
+
+    const trimmedUsername = username !== undefined ? username.trim() : exUser.username;
+    const trimmedName = name !== undefined ? name.trim() : exUser.name;
+    const resolvedRole = role || exUser.role;
+
+    if (username !== undefined) {
+      const usernameRegex = /^[a-zA-Z0-9._]+$/;
+      if (trimmedUsername.length < 3 || trimmedUsername.length > 20 || !usernameRegex.test(trimmedUsername)) {
+        res.status(422).json({ error: 'El nombre de usuario debe tener entre 3 y 20 caracteres y contener solo letras, números, puntos o guiones bajos.' });
+        return;
+      }
+      
+      const exists = db.getUserWithPassword(trimmedUsername);
+      if (exists && exists.id !== userId) {
+        res.status(422).json({ error: 'El nombre de usuario ya está registrado por otro operador.' });
+        return;
+      }
+    }
+
+    if (password !== undefined && password.length < 6) {
+      res.status(422).json({ error: 'La contraseña debe tener al menos 6 caracteres.' });
+      return;
+    }
+
+    if (name !== undefined && (trimmedName.length < 2 || trimmedName.length > 50)) {
+      res.status(422).json({ error: 'El nombre completo debe tener entre 2 y 50 caracteres.' });
+      return;
+    }
+
+    if (role !== undefined && resolvedRole !== 'admin' && resolvedRole !== 'cajero') {
+      res.status(422).json({ error: 'El rol especificado es inválido.' });
+      return;
+    }
 
     const updatedUser: db.User = {
       id: userId,
-      username: username || exUser.username,
-      password: password || undefined, // will merge inside db.saveUsers
-      name: name || exUser.name,
-      role: role || exUser.role,
+      username: trimmedUsername,
+      password: password || undefined,
+      name: trimmedName,
+      role: resolvedRole,
       active: active !== undefined ? active : exUser.active
     };
 
@@ -230,13 +290,22 @@ async function startServer() {
 
   app.post('/api/caja/open', requireAuth, (req: Request, res: Response) => {
     const { initialBalance } = req.body;
-    const balanceNum = parseFloat(initialBalance) || 0;
+    if (initialBalance === undefined || initialBalance === null || String(initialBalance).trim() === '') {
+      res.status(400).json({ error: 'El saldo inicial de apertura es obligatorio' });
+      return;
+    }
+
+    const balanceNum = parseFloat(initialBalance);
+    if (isNaN(balanceNum) || balanceNum < 0) {
+      res.status(422).json({ error: 'El saldo inicial de apertura debe ser un número válido mayor o igual a cero.' });
+      return;
+    }
 
     try {
       const openCaja = db.openCaja(req.user!.id, req.user!.name, balanceNum);
       res.json({ message: 'Caja abierta con éxito', openCaja });
     } catch (err: any) {
-      res.status(400).json({ error: err.message });
+      res.status(422).json({ error: err.message });
     }
   });
 
@@ -281,7 +350,56 @@ async function startServer() {
     }
 
     if (!paymentMethod || !paymentRef) {
-      res.status(400).json({ error: 'Los datos de pago electrónico son obligatorios.' });
+      res.status(400).json({ error: 'Los datos de pago electrónico (método y referencia) son obligatorios.' });
+      return;
+    }
+
+    const allowedPaymentMethods = ['Transferencia', 'Tarjeta de Crédito', 'Tarjeta de Débito', 'Mercado Pago'];
+    if (!allowedPaymentMethods.includes(paymentMethod)) {
+      res.status(422).json({ error: 'El método de pago especificado no es válido.' });
+      return;
+    }
+
+    const trimmedPaymentRef = paymentRef.trim();
+    if (trimmedPaymentRef.length < 3 || trimmedPaymentRef.length > 50) {
+      res.status(422).json({ error: 'La referencia de pago electrónico debe tener entre 3 y 50 caracteres.' });
+      return;
+    }
+
+    const trimmedCustomerResidence = customerResidence ? customerResidence.trim() : '';
+    if (!trimmedCustomerResidence || trimmedCustomerResidence.length < 3) {
+      res.status(422).json({ error: 'El país y ciudad de residencia del comprador principal es obligatorio y debe tener al menos 3 caracteres.' });
+      return;
+    }
+
+    // Validate items
+    let totalQty = 0;
+    for (const item of items) {
+      const allowedCategories = ['extranjero', 'nacional', 'residente', 'minor'];
+      if (!item.category || !allowedCategories.includes(item.category)) {
+        res.status(422).json({ error: 'La categoría de entrada especificada no es válida.' });
+        return;
+      }
+      const qtyNum = parseInt(item.qty);
+      if (isNaN(qtyNum) || qtyNum < 0 || qtyNum > 100) {
+        res.status(422).json({ error: 'La cantidad de entradas por categoría debe ser un número entero entre 0 y 100.' });
+        return;
+      }
+      totalQty += qtyNum;
+
+      if (item.holders && Array.isArray(item.holders)) {
+        for (let idx = 0; idx < item.holders.length; idx++) {
+          const holder = item.holders[idx];
+          if (holder.residence && holder.residence.trim().length > 0 && holder.residence.trim().length < 3) {
+            res.status(422).json({ error: `La residencia del visitante #${idx + 1} de la categoría ${item.category} debe tener al menos 3 caracteres si se especifica.` });
+            return;
+          }
+        }
+      }
+    }
+
+    if (totalQty === 0) {
+      res.status(422).json({ error: 'La cantidad total de entradas emitidas debe ser mayor a cero.' });
       return;
     }
 
@@ -365,15 +483,38 @@ async function startServer() {
   // 7. Reports & Statistics API
   app.get('/api/reports/daily', requireAuth, (req: Request, res: Response) => {
     const dateQuery = req.query.date as string || new Date().toISOString().split('T')[0];
-    
-    const sales = db.getSales();
-    const tickets = db.getTickets();
+    const dbSqlite = db.getDB();
 
-    // Filter sales and tickets for the target date
-    const dailySales = sales.filter(s => s.timestamp.startsWith(dateQuery));
-    const dailyTickets = tickets.filter(t => t.purchaseDate.startsWith(dateQuery));
+    // Fetch sales for the day
+    const dailySalesRows = dbSqlite.prepare(`
+      SELECT id, timestamp, cajaId, userId, userName, items, paymentMethod, totalAmount, paymentRef, customerName, customerDni, customerResidence 
+      FROM sales 
+      WHERE timestamp LIKE ?
+    `).all(dateQuery + '%');
 
-    // Desglose por categoría
+    const dailySales = dailySalesRows.map((r: any) => ({
+      id: r.id,
+      timestamp: r.timestamp,
+      cajaId: r.cajaId,
+      userId: r.userId,
+      userName: r.userName,
+      items: JSON.parse(r.items),
+      paymentMethod: r.paymentMethod,
+      totalAmount: r.totalAmount,
+      paymentRef: r.paymentRef,
+      customerName: r.customerName || undefined,
+      customerDni: r.customerDni || undefined,
+      customerResidence: r.customerResidence || undefined
+    }));
+
+    // Aggregate category counts and revenues directly in SQLite
+    const categoryStatsRows = dbSqlite.prepare(`
+      SELECT category, COUNT(*) as count, SUM(price) as revenue 
+      FROM tickets 
+      WHERE purchaseDate LIKE ? 
+      GROUP BY category
+    `).all(dateQuery + '%');
+
     const statsByCategory = {
       extranjero: { count: 0, revenue: 0 },
       nacional: { count: 0, revenue: 0 },
@@ -381,14 +522,23 @@ async function startServer() {
       minor: { count: 0, revenue: 0 }
     };
 
-    dailyTickets.forEach(t => {
-      if (statsByCategory[t.category]) {
-        statsByCategory[t.category].count += 1;
-        statsByCategory[t.category].revenue += t.price;
+    categoryStatsRows.forEach((r: any) => {
+      if (r.category in statsByCategory) {
+        statsByCategory[r.category as keyof typeof statsByCategory] = {
+          count: r.count,
+          revenue: r.revenue
+        };
       }
     });
 
-    // Desglose por método de pago
+    // Aggregate payment methods directly in SQLite
+    const paymentStatsRows = dbSqlite.prepare(`
+      SELECT paymentMethod, SUM(totalAmount) as revenue 
+      FROM sales 
+      WHERE timestamp LIKE ? 
+      GROUP BY paymentMethod
+    `).all(dateQuery + '%');
+
     const paymentStats: Record<string, number> = {
       'Transferencia': 0,
       'Tarjeta de Crédito': 0,
@@ -396,11 +546,18 @@ async function startServer() {
       'Mercado Pago': 0
     };
 
-    dailySales.forEach(s => {
-      if (paymentStats[s.paymentMethod] !== undefined) {
-        paymentStats[s.paymentMethod] += s.totalAmount;
+    paymentStatsRows.forEach((r: any) => {
+      if (r.paymentMethod in paymentStats) {
+        paymentStats[r.paymentMethod] = r.revenue;
       }
     });
+
+    // Ticket counts and validated count
+    const ticketCounts = dbSqlite.prepare(`
+      SELECT COUNT(*) as total, SUM(CASE WHEN validated = 1 THEN 1 ELSE 0 END) as validated 
+      FROM tickets 
+      WHERE purchaseDate LIKE ?
+    `).get(dateQuery + '%') || { total: 0, validated: 0 };
 
     const totalRevenue = dailySales.reduce((acc, s) => acc + s.totalAmount, 0);
 
@@ -408,8 +565,8 @@ async function startServer() {
       date: dateQuery,
       totalRevenue,
       salesCount: dailySales.length,
-      ticketCount: dailyTickets.length,
-      validatedCount: dailyTickets.filter(t => t.validated).length,
+      ticketCount: ticketCounts.total,
+      validatedCount: ticketCounts.validated || 0,
       byCategory: statsByCategory,
       byPayment: paymentStats,
       salesList: dailySales
@@ -417,66 +574,130 @@ async function startServer() {
   });
 
   app.get('/api/reports/stats', requireAuth, (req: Request, res: Response) => {
-    const sales = db.getSales();
-    const tickets = db.getTickets();
+    const dbSqlite = db.getDB();
 
-    // Group sales by day for the last 7 days to draw charts
+    // 1. Seed trend map for the last 8 days
     const dailyTrendMap = new Map<string, { date: string; revenue: number; tickets: number }>();
-    
-    // Seed trend map for the last 7 days
+    const datesList: string[] = [];
     for (let i = 7; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const dStr = d.toISOString().split('T')[0];
       dailyTrendMap.set(dStr, { date: dStr, revenue: 0, tickets: 0 });
+      datesList.push(dStr);
     }
 
-    sales.forEach(s => {
-      const day = s.timestamp.split('T')[0];
-      if (dailyTrendMap.has(day)) {
-        const current = dailyTrendMap.get(day)!;
-        current.revenue += s.totalAmount;
-        dailyTrendMap.set(day, current);
+    const minDate = datesList[0];
+    const maxDate = datesList[datesList.length - 1] + 'T23:59:59';
+
+    // Query sales trend
+    const salesTrend = dbSqlite.prepare(`
+      SELECT SUBSTR(timestamp, 1, 10) as day, SUM(totalAmount) as revenue 
+      FROM sales 
+      WHERE timestamp BETWEEN ? AND ? 
+      GROUP BY day
+    `).all(minDate, maxDate);
+
+    salesTrend.forEach((r: any) => {
+      if (dailyTrendMap.has(r.day)) {
+        dailyTrendMap.get(r.day)!.revenue = r.revenue;
       }
     });
 
-    tickets.forEach(t => {
-      const day = t.purchaseDate.split('T')[0];
-      if (dailyTrendMap.has(day)) {
-        const current = dailyTrendMap.get(day)!;
-        current.tickets += 1;
-        dailyTrendMap.set(day, current);
+    // Query tickets trend
+    const ticketsTrend = dbSqlite.prepare(`
+      SELECT SUBSTR(purchaseDate, 1, 10) as day, COUNT(*) as count 
+      FROM tickets 
+      WHERE purchaseDate BETWEEN ? AND ? 
+      GROUP BY day
+    `).all(minDate, maxDate);
+
+    ticketsTrend.forEach((r: any) => {
+      if (dailyTrendMap.has(r.day)) {
+        dailyTrendMap.get(r.day)!.tickets = r.count;
       }
     });
 
     const trendData = Array.from(dailyTrendMap.values()).sort((a, b) => a.date.localeCompare(b.date));
 
-    // Distribution by Category
+    // 2. Category Distribution
+    const categoryStats = dbSqlite.prepare(`
+      SELECT category, COUNT(*) as count, SUM(price) as revenue 
+      FROM tickets 
+      GROUP BY category
+    `).all();
+
+    const categoryMap: Record<string, { value: number; revenue: number }> = {
+      extranjero: { value: 0, revenue: 0 },
+      nacional: { value: 0, revenue: 0 },
+      residente: { value: 0, revenue: 0 },
+      minor: { value: 0, revenue: 0 }
+    };
+
+    categoryStats.forEach((r: any) => {
+      if (r.category in categoryMap) {
+        categoryMap[r.category] = { value: r.count, revenue: r.revenue };
+      }
+    });
+
     const categoryDistribution = [
-      { name: 'Extranjero', value: tickets.filter(t => t.category === 'extranjero').length, revenue: tickets.filter(t => t.category === 'extranjero').reduce((acc, t) => acc + t.price, 0) },
-      { name: 'Nacional', value: tickets.filter(t => t.category === 'nacional').length, revenue: tickets.filter(t => t.category === 'nacional').reduce((acc, t) => acc + t.price, 0) },
-      { name: 'Residente Chubut', value: tickets.filter(t => t.category === 'residente').length, revenue: tickets.filter(t => t.category === 'residente').reduce((acc, t) => acc + t.price, 0) },
-      { name: 'Menor / Jubilado', value: tickets.filter(t => t.category === 'minor').length, revenue: 0 }
+      { name: 'Extranjero', value: categoryMap.extranjero.value, revenue: categoryMap.extranjero.revenue },
+      { name: 'Nacional', value: categoryMap.nacional.value, revenue: categoryMap.nacional.revenue },
+      { name: 'Residente Chubut', value: categoryMap.residente.value, revenue: categoryMap.residente.revenue },
+      { name: 'Menor / Jubilado', value: categoryMap.minor.value, revenue: categoryMap.minor.revenue }
     ];
 
-    // Method of Payment Distribution
+    // 3. Method of Payment Distribution
+    const paymentStats = dbSqlite.prepare(`
+      SELECT paymentMethod, SUM(totalAmount) as value 
+      FROM sales 
+      GROUP BY paymentMethod
+    `).all();
+
+    const paymentMap: Record<string, number> = {
+      'Mercado Pago': 0,
+      'Transferencia': 0,
+      'Tarjeta de Crédito': 0,
+      'Tarjeta de Débito': 0
+    };
+
+    paymentStats.forEach((r: any) => {
+      paymentMap[r.paymentMethod] = r.value;
+    });
+
     const paymentMethodsStats = [
-      { name: 'Mercado Pago', value: sales.filter(s => s.paymentMethod === 'Mercado Pago').reduce((acc, s) => acc + s.totalAmount, 0) },
-      { name: 'Transferencia', value: sales.filter(s => s.paymentMethod === 'Transferencia').reduce((acc, s) => acc + s.totalAmount, 0) },
-      { name: 'Crédito', value: sales.filter(s => s.paymentMethod === 'Tarjeta de Crédito').reduce((acc, s) => acc + s.totalAmount, 0) },
-      { name: 'Débito', value: sales.filter(s => s.paymentMethod === 'Tarjeta de Débito').reduce((acc, s) => acc + s.totalAmount, 0) }
+      { name: 'Mercado Pago', value: paymentMap['Mercado Pago'] || 0 },
+      { name: 'Transferencia', value: paymentMap['Transferencia'] || 0 },
+      { name: 'Crédito', value: paymentMap['Tarjeta de Crédito'] || 0 },
+      { name: 'Débito', value: paymentMap['Tarjeta de Débito'] || 0 }
     ];
 
-    // Top active cashiers
-    const cashiers = db.getUsers().filter(u => u.role === 'cajero');
+    // 4. Top active cashiers
+    const cashierStats = dbSqlite.prepare(`
+      SELECT userId, userName, COUNT(*) as count, SUM(totalAmount) as revenue 
+      FROM sales 
+      GROUP BY userId, userName
+    `).all();
+
+    const usersList = db.getUsers();
+    const cashiers = usersList.filter(u => u.role === 'cajero');
+
     const cashierRanking = cashiers.map(c => {
-      const cashierSales = sales.filter(s => s.userId === c.id);
+      const stats = cashierStats.find((s: any) => s.userId === c.id) || { count: 0, revenue: 0 };
       return {
         name: c.name,
-        salesCount: cashierSales.length,
-        revenue: cashierSales.reduce((acc, s) => acc + s.totalAmount, 0)
+        salesCount: stats.count,
+        revenue: stats.revenue
       };
     }).sort((a, b) => b.revenue - a.revenue);
+
+    // 5. Overall Totals
+    const overallTotals = dbSqlite.prepare(`
+      SELECT 
+        (SELECT SUM(totalAmount) FROM sales) as totalRevenue,
+        (SELECT COUNT(*) FROM tickets) as totalTickets,
+        (SELECT COUNT(*) FROM tickets WHERE validated = 1) as totalValidated
+    `).get() || { totalRevenue: 0, totalTickets: 0, totalValidated: 0 };
 
     res.json({
       trend: trendData,
@@ -484,28 +705,32 @@ async function startServer() {
       payments: paymentMethodsStats,
       cashiers: cashierRanking,
       totals: {
-        revenue: sales.reduce((acc, s) => acc + s.totalAmount, 0),
-        tickets: tickets.length,
-        validated: tickets.filter(t => t.validated).length
+        revenue: overallTotals.totalRevenue || 0,
+        tickets: overallTotals.totalTickets || 0,
+        validated: overallTotals.totalValidated || 0
       }
     });
   });
 
-  // --- VITE MIDDLEWARE SETUP ---
-
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
+  // Serve static assets in production mode
+  if (process.env.NODE_ENV === 'production') {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
     app.get('*', (req: Request, res: Response) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
+
+  // Global Error Handling Middleware
+  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.error('Unhandled Server Error:', err);
+    const statusCode = err.status || 500;
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.status(statusCode).json({
+      error: isProduction ? 'Ocurrió un error interno en el servidor.' : err.message,
+      ...(isProduction ? {} : { stack: err.stack })
+    });
+  });
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);

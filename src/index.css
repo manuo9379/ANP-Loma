@@ -9,7 +9,7 @@
 /* -------------------------------------------------------------------------- */
 /* SMOOTH TRANSITIONS                                                         */
 /* -------------------------------------------------------------------------- */
-* {
+a, button, input, select, textarea, [role="button"] {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
@@ -232,4 +232,127 @@
 .dark .recharts-tooltip-item-name,
 .dark .recharts-tooltip-item-value {
   color: #d1d5db !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* SKELETON LOADER ANIMATION                                                  */
+/* -------------------------------------------------------------------------- */
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .4;
+  }
+}
+
+.animate-skeleton {
+  animation: skeleton-pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  background-color: #e2e8f0;
+}
+
+.dark .animate-skeleton {
+  background-color: #334155;
+}
+
+/* -------------------------------------------------------------------------- */
+/* PRINT LAYOUT OPTIMIZATION (80MM THERMAL TICKETS)                           */
+/* -------------------------------------------------------------------------- */
+@media print {
+  /* Hide unrelated layouts */
+  aside,
+  header,
+  #login_container,
+  #admin_panel_view,
+  #reports_view,
+  #caja_manager_view,
+  .no-print,
+  .noprint,
+  .border-b,
+  .bg-emerald-50,
+  button {
+    display: none !important;
+  }
+
+  /* Reset main layouts wrapper */
+  body, html {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 80mm !important;
+  }
+
+  #root {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 80mm !important;
+    box-shadow: none !important;
+  }
+
+  #ticket_venta_view {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 80mm !important;
+  }
+
+  #ticket_venta_view > div.border-b,
+  #ticket_venta_view > div.bg-emerald-50,
+  #ticket_venta_view > div.flex {
+    display: none !important;
+  }
+
+  #tickets_print_area {
+    display: block !important;
+    width: 80mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #tickets_print_area > div {
+    display: block !important;
+    border: none !important;
+    border-bottom: 1px dashed black !important;
+    box-shadow: none !important;
+    margin: 0 0 8mm 0 !important;
+    padding: 2mm 0 6mm 0 !important;
+    page-break-after: always !important;
+    width: 80mm !important;
+    box-sizing: border-box !important;
+    font-family: 'Courier New', Courier, monospace !important;
+  }
+
+  #tickets_print_area > div::after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+
+  #tickets_print_area > div > div.absolute {
+    display: none !important;
+  }
+
+  #tickets_print_area h4 {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    margin: 1mm 0 !important;
+    color: black !important;
+  }
+
+  #tickets_print_area p,
+  #tickets_print_area span,
+  #tickets_print_area div {
+    font-size: 10px !important;
+    color: black !important;
+  }
+
+  #tickets_print_area img {
+    width: 40mm !important;
+    height: 40mm !important;
+    margin-top: 3mm !important;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
 }

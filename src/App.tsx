@@ -3,8 +3,9 @@ import Login from './components/Login';
 import CajaManager from './components/CajaManager';
 import TicketVenta from './components/TicketVenta';
 import TicketValidador from './components/TicketValidador';
-import Reports from './components/Reports';
-import AdminPanel from './components/AdminPanel';
+
+const Reports = React.lazy(() => import('./components/Reports'));
+const AdminPanel = React.lazy(() => import('./components/AdminPanel'));
 import { Caja } from './types';
 import { 
   LogOut, 
@@ -176,6 +177,7 @@ export default function App() {
           {/* Sell Ticket tab */}
           <button
             onClick={() => setActiveTab('venta')}
+            data-testid="nav-tab-venta"
             className={`w-full px-5 py-2.5 text-left text-xs font-semibold flex items-center gap-3 transition-all cursor-pointer border-l-4 ${
               activeTab === 'venta'
                 ? 'bg-emerald-900/60 border-emerald-400 text-white font-bold'
@@ -189,9 +191,10 @@ export default function App() {
           {/* Shift management tab */}
           <button
             onClick={() => setActiveTab('caja')}
+            data-testid="nav-tab-caja"
             className={`w-full px-5 py-2.5 text-left text-xs font-semibold flex items-center gap-3 transition-all cursor-pointer border-l-4 relative ${
               activeTab === 'caja'
-                ? 'bg-emerald-900/60 border-emerald-400 text-white font-bold'
+                ? 'bg-emerald-950 border-l-4 border-emerald-400 text-white font-bold'
                 : 'border-transparent text-emerald-100/70 hover:bg-emerald-900/30 hover:text-white'
             }`}
           >
@@ -205,6 +208,7 @@ export default function App() {
           {/* Validation gate check-in tab */}
           <button
             onClick={() => setActiveTab('validador')}
+            data-testid="nav-tab-validador"
             className={`w-full px-5 py-2.5 text-left text-xs font-semibold flex items-center gap-3 transition-all cursor-pointer border-l-4 ${
               activeTab === 'validador'
                 ? 'bg-emerald-900/60 border-emerald-400 text-white font-bold'
@@ -218,6 +222,7 @@ export default function App() {
           {/* Reports tab */}
           <button
             onClick={() => setActiveTab('reportes')}
+            data-testid="nav-tab-reportes"
             className={`w-full px-5 py-2.5 text-left text-xs font-semibold flex items-center gap-3 transition-all cursor-pointer border-l-4 ${
               activeTab === 'reportes'
                 ? 'bg-emerald-900/60 border-emerald-400 text-white font-bold'
@@ -232,6 +237,7 @@ export default function App() {
           {user.role === 'admin' && (
             <button
               onClick={() => setActiveTab('admin')}
+              data-testid="nav-tab-admin"
               className={`w-full px-5 py-2.5 text-left text-xs font-semibold flex items-center gap-3 transition-all cursor-pointer border-l-4 ${
                 activeTab === 'admin'
                   ? 'bg-emerald-900/60 border-emerald-400 text-white font-bold'
@@ -243,6 +249,28 @@ export default function App() {
             </button>
           )}
         </nav>
+
+        {/* Active shift info widget */}
+        {openCaja && (
+          <div className="mx-4 my-2 p-3 bg-emerald-950/40 border border-emerald-800/40 rounded-xl space-y-2 shrink-0">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400">Turno de Caja</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            </div>
+            <div className="grid grid-cols-2 gap-1.5 text-slate-100">
+              <div className="bg-emerald-950/30 p-1.5 rounded-lg border border-emerald-900/20">
+                <span className="text-[9px] text-emerald-400/80 block uppercase tracking-wide">Recaudado</span>
+                <span className="text-[11px] font-bold tracking-tight">
+                  {new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(openCaja.initialBalance + openCaja.currentSales)}
+                </span>
+              </div>
+              <div className="bg-emerald-950/30 p-1.5 rounded-lg border border-emerald-900/20">
+                <span className="text-[9px] text-emerald-400/80 block uppercase tracking-wide">Ventas</span>
+                <span className="text-[11px] font-bold tracking-tight text-center block">{openCaja.salesCount}</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Profile and Logout area */}
         <div className="p-4 bg-emerald-950/60 border-t border-emerald-900/60 shrink-0 space-y-3">
@@ -259,6 +287,7 @@ export default function App() {
           </div>
           <button
             onClick={handleLogout}
+            data-testid="nav-logout-btn"
             className="w-full py-1.5 text-[10px] border border-emerald-800 text-emerald-200 hover:text-white hover:bg-emerald-900/50 rounded transition-colors uppercase font-bold tracking-widest flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
@@ -295,6 +324,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => setDarkMode(!darkMode)}
+              data-testid="nav-theme-toggle"
               className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer flex items-center justify-center border border-transparent hover:border-slate-200 dark:hover:border-slate-750"
               title={darkMode ? "Cambiar a Modo Claro" : "Cambiar a Modo Nocturno"}
             >
@@ -341,11 +371,25 @@ export default function App() {
             )}
 
             {activeTab === 'reportes' && (
-              <Reports token={token} />
+              <React.Suspense fallback={
+                <div className="flex flex-col items-center justify-center p-12 space-y-4">
+                  <Compass className="w-8 h-8 text-emerald-600 dark:text-emerald-400 animate-spin" />
+                  <span className="text-slate-500 dark:text-slate-400 font-medium text-xs">Cargando Reportes...</span>
+                </div>
+              }>
+                <Reports token={token} />
+              </React.Suspense>
             )}
 
             {activeTab === 'admin' && user.role === 'admin' && (
-              <AdminPanel token={token} />
+              <React.Suspense fallback={
+                <div className="flex flex-col items-center justify-center p-12 space-y-4">
+                  <Settings className="w-8 h-8 text-emerald-600 dark:text-emerald-400 animate-spin" />
+                  <span className="text-slate-500 dark:text-slate-400 font-medium text-xs">Cargando Panel de Administración...</span>
+                </div>
+              }>
+                <AdminPanel token={token} />
+              </React.Suspense>
             )}
           </div>
         </main>

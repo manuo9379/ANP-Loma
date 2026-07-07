@@ -19,6 +19,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
+import { adminService } from '../services/apiService';
 
 interface AdminPanelProps {
   token: string;
@@ -58,11 +59,8 @@ export default function AdminPanel({ token }: AdminPanelProps) {
   // Load prices
   const loadPrices = async () => {
     try {
-      const response = await fetch('/api/settings/prices');
-      if (response.ok) {
-        const data = await response.json();
-        setPrices(data);
-      }
+      const data = await adminService.getPrices();
+      setPrices(data);
     } catch (err) {
       console.error('Error loading prices:', err);
     }
@@ -72,15 +70,8 @@ export default function AdminPanel({ token }: AdminPanelProps) {
   const loadUsers = async () => {
     setUserLoading(true);
     try {
-      const response = await fetch('/api/users', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data);
-      }
+      const data = await adminService.getUsers(token);
+      setUsers(data);
     } catch (err) {
       console.error('Error loading users:', err);
     } finally {
@@ -99,20 +90,8 @@ export default function AdminPanel({ token }: AdminPanelProps) {
     setPriceSuccess(false);
 
     try {
-      const response = await fetch('/api/settings/prices', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(prices)
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al guardar precios');
-      }
-
+      const updatedPrices = await adminService.savePrices(token, prices);
+      setPrices(updatedPrices);
       setPriceSuccess(true);
       setTimeout(() => setPriceSuccess(false), 3000);
     } catch (err: any) {
@@ -135,30 +114,37 @@ export default function AdminPanel({ token }: AdminPanelProps) {
     setUserError(null);
     setUserSuccess(null);
 
-    if (!newUsername.trim() || !newPassword.trim() || !newName.trim()) {
+    const trimmedUsername = newUsername.trim();
+    const trimmedName = newName.trim();
+
+    if (!trimmedUsername || !newPassword.trim() || !trimmedName) {
       setUserError('Todos los campos son obligatorios para crear un usuario.');
       return;
     }
 
-    try {
-      const response = await fetch('/api/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          username: newUsername.trim(),
-          password: newPassword,
-          name: newName.trim(),
-          role: newRole
-        })
-      });
+    const usernameRegex = /^[a-zA-Z0-9._]+$/;
+    if (trimmedUsername.length < 3 || trimmedUsername.length > 20 || !usernameRegex.test(trimmedUsername)) {
+      setUserError('El nombre de usuario debe tener entre 3 y 20 caracteres y contener solo letras, números, puntos o guiones bajos.');
+      return;
+    }
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al crear usuario.');
-      }
+    if (newPassword.length < 6) {
+      setUserError('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
+    if (trimmedName.length < 2 || trimmedName.length > 50) {
+      setUserError('El nombre completo debe tener entre 2 y 50 caracteres.');
+      return;
+    }
+
+    try {
+      await adminService.createUser(token, {
+        username: trimmedUsername,
+        password: newPassword,
+        name: trimmedName,
+        role: newRole
+      });
 
       setUserSuccess(`¡Usuario "${newName}" creado correctamente!`);
       setNewUsername('');
@@ -190,24 +176,18 @@ export default function AdminPanel({ token }: AdminPanelProps) {
     setUserError(null);
     setUserSuccess(null);
 
-    try {
-      const response = await fetch(`/api/users/${editingUser.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: editName.trim(),
-          role: editRole,
-          active: editActive
-        })
-      });
+    const trimmedName = editName.trim();
+    if (!trimmedName || trimmedName.length < 2 || trimmedName.length > 50) {
+      setUserError('El nombre completo debe tener entre 2 y 50 caracteres.');
+      return;
+    }
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al editar usuario.');
-      }
+    try {
+      await adminService.updateUser(token, editingUser.id, {
+        name: trimmedName,
+        role: editRole,
+        active: editActive
+      });
 
       setUserSuccess(`¡Usuario "${editName}" actualizado correctamente!`);
       setEditingUser(null);
@@ -229,18 +209,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
     setUserSuccess(null);
 
     try {
-      const response = await fetch(`/api/users/${user.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al desactivar usuario.');
-      }
-
+      await adminService.deactivateUser(token, user.id);
       setUserSuccess(`El usuario "${user.name}" fue desactivado exitosamente.`);
       loadUsers();
     } catch (err: any) {
@@ -285,6 +254,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                     type="number"
                     value={prices.extranjero}
                     onChange={(e) => handlePriceChange('extranjero', e.target.value)}
+                    data-testid="admin-price-extranjero"
                     className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-mono font-bold"
                     placeholder="10000"
                     min="0"
@@ -301,6 +271,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                     type="number"
                     value={prices.nacional}
                     onChange={(e) => handlePriceChange('nacional', e.target.value)}
+                    data-testid="admin-price-nacional"
                     className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-mono font-bold"
                     placeholder="5000"
                     min="0"
@@ -317,6 +288,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                     type="number"
                     value={prices.residente}
                     onChange={(e) => handlePriceChange('residente', e.target.value)}
+                    data-testid="admin-price-residente"
                     className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-mono font-bold"
                     placeholder="2500"
                     min="0"
@@ -333,6 +305,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                     type="number"
                     value={prices.minor}
                     onChange={(e) => handlePriceChange('minor', e.target.value)}
+                    data-testid="admin-price-minor"
                     className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-mono font-bold"
                     placeholder="0"
                     min="0"
@@ -349,6 +322,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
 
               <button
                 id="save_prices_btn"
+                data-testid="admin-save-prices-btn"
                 type="submit"
                 disabled={priceLoading}
                 className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-medium rounded-xl text-xs transition-colors shadow-md cursor-pointer flex items-center justify-center gap-1"
@@ -385,7 +359,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                   <Edit3 className="w-4.5 h-4.5" />
                   Modificar Operador: "{editingUser.username}"
                 </h3>
-                <button type="button" onClick={handleCancelEdit} className="text-slate-400 hover:text-white text-xs">
+                <button type="button" onClick={handleCancelEdit} data-testid="admin-edit-user-cancel-header" className="text-slate-400 hover:text-white text-xs">
                   Cancelar
                 </button>
               </div>
@@ -397,6 +371,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
+                    data-testid="admin-edit-user-name"
                     className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                     placeholder="Ej: Pedro Madryn"
                   />
@@ -406,6 +381,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                   <select
                     value={editRole}
                     onChange={(e) => setEditRole(e.target.value as any)}
+                    data-testid="admin-edit-user-role"
                     className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500"
                   >
                     <option value="cajero">Cajero / Operador</option>
@@ -420,6 +396,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                         type="radio"
                         checked={editActive === true}
                         onChange={() => setEditActive(true)}
+                        data-testid="admin-edit-user-active-true"
                         className="text-emerald-500 focus:ring-0"
                       />
                       <span>Habilitado (Activo)</span>
@@ -429,6 +406,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                         type="radio"
                         checked={editActive === false}
                         onChange={() => setEditActive(false)}
+                        data-testid="admin-edit-user-active-false"
                         className="text-emerald-500 focus:ring-0"
                       />
                       <span>Inhabilitado (De baja)</span>
@@ -441,6 +419,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                 <button
                   type="button"
                   onClick={handleCancelEdit}
+                  data-testid="admin-edit-user-cancel-btn"
                   className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition-colors cursor-pointer"
                 >
                   Cancelar
@@ -448,6 +427,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                 <button
                   id="save_user_edit_btn"
                   type="submit"
+                  data-testid="admin-edit-user-save-btn"
                   className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-xs transition-colors cursor-pointer"
                 >
                   Guardar Cambios
@@ -469,6 +449,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                     type="text"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
+                    data-testid="admin-create-user-name"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
                     placeholder="Ej: Juan Pérez"
                   />
@@ -479,6 +460,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                   <select
                     value={newRole}
                     onChange={(e) => setNewRole(e.target.value as any)}
+                    data-testid="admin-create-user-role"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-emerald-500"
                   >
                     <option value="cajero">Cajero / Operador</option>
@@ -492,6 +474,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                     type="text"
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
+                    data-testid="admin-create-user-username"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
                     placeholder="Ej: jperez"
                   />
@@ -504,12 +487,14 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                       type={showNewPassword ? 'text' : 'password'}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
+                      data-testid="admin-create-user-password"
                       className="w-full pl-3 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
                       placeholder="••••••••"
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
+                      data-testid="admin-create-user-show-password"
                       className="absolute inset-y-0 right-0 flex items-center pr-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
                     >
                       {showNewPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -521,6 +506,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
               <div className="flex justify-end pt-2">
                 <button
                   id="create_user_submit_btn"
+                  data-testid="admin-create-user-submit-btn"
                   type="submit"
                   className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs transition-colors shadow-sm cursor-pointer flex items-center gap-1"
                 >
@@ -583,6 +569,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                           <div className="flex justify-end gap-1.5">
                             <button
                               onClick={() => handleStartEdit(u)}
+                              data-testid={`admin-user-list-edit-btn-${u.username}`}
                               className="p-1 text-slate-400 hover:text-emerald-600 rounded hover:bg-slate-100 transition-colors cursor-pointer"
                               title="Editar operador"
                             >
@@ -591,6 +578,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
                             {u.active && (
                               <button
                                 onClick={() => handleDeactivateUser(u)}
+                                data-testid={`admin-user-list-deactivate-btn-${u.username}`}
                                 className="p-1 text-slate-400 hover:text-red-600 rounded hover:bg-slate-100 transition-colors cursor-pointer"
                                 title="Desactivar operador"
                               >
@@ -634,6 +622,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
               <button
                 type="button"
                 onClick={() => setDeactivatingUser(null)}
+                data-testid="admin-deactivate-modal-cancel-btn"
                 className="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
               >
                 Cancelar
@@ -641,6 +630,7 @@ export default function AdminPanel({ token }: AdminPanelProps) {
               <button
                 type="button"
                 onClick={executeDeactivateUser}
+                data-testid="admin-deactivate-modal-confirm-btn"
                 className="px-4 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer"
               >
                 Desactivar Cuenta

@@ -16,6 +16,8 @@ import {
   UserCheck
 } from 'lucide-react';
 import { initAuth, googleSignIn, logoutGoogle } from '../lib/googleAuth';
+import { cajaService, reportsService } from '../services/apiService';
+import { uploadToGoogleDriveAndSheets } from '../services/googleSheetsService';
 
 interface CajaManagerProps {
   token: string;
@@ -28,6 +30,7 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
   const [initialBalance, setInitialBalance] = useState('0');
   const [cajaHistory, setCajaHistory] = useState<Caja[]>([]);
   const [loading, setLoading] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showReceipt, setShowReceipt] = useState<Caja | null>(null);
@@ -41,19 +44,15 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
 
   // Fetch caja history
   const fetchHistory = async () => {
+    setHistoryLoading(true);
     try {
-      const response = await fetch('/api/caja/history', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        // Sort newest first
-        setCajaHistory(data.sort((a: Caja, b: Caja) => new Date(b.openTime).getTime() - new Date(a.openTime).getTime()));
-      }
+      const data = await cajaService.getHistory(token);
+      // Sort newest first
+      setCajaHistory(data.sort((a: Caja, b: Caja) => new Date(b.openTime).getTime() - new Date(a.openTime).getTime()));
     } catch (err) {
       console.error('Error fetching shift history:', err);
+    } finally {
+      setHistoryLoading(false);
     }
   };
 
@@ -88,144 +87,6 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
     }
   };
 
-  const uploadToGoogleDriveAndSheets = async (sales: Sale[], todayDate: string, accessToken: string) => {
-    // 1. Helper to fetch with Bearer token
-    const callApi = async (url: string, options: RequestInit = {}) => {
-      const headers = {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        ...options.headers,
-      };
-      const response = await fetch(url, { ...options, headers });
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(`Error en la llamada de Google API (${response.status}): ${errText}`);
-      }
-      return response.json();
-    };
-
-    // 2. Search or Create "Mr. Roboto" Folder
-    const searchMrRobotoUrl = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(
-      "name='Mr. Roboto' and mimeType='application/vnd.google-apps.folder' and 'root' in parents and trashed=false"
-    )}`;
-    const mrRobotoSearch = await callApi(searchMrRobotoUrl);
-    let mrRobotoId = '';
-    
-    if (mrRobotoSearch.files && mrRobotoSearch.files.length > 0) {
-      mrRobotoId = mrRobotoSearch.files[0].id;
-    } else {
-      // Create it
-      const createMrRoboto = await callApi('https://www.googleapis.com/drive/v3/files', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: 'Mr. Roboto',
-          mimeType: 'application/vnd.google-apps.folder',
-          parents: ['root'],
-        }),
-      });
-      mrRobotoId = createMrRoboto.id;
-    }
-
-    // 3. Search or Create "Sistema Loma" Folder inside "Mr. Roboto"
-    const searchSistemaLomaUrl = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(
-      `name='Sistema Loma' and mimeType='application/vnd.google-apps.folder' and '${mrRobotoId}' in parents and trashed=false`
-    )}`;
-    const sistemaLomaSearch = await callApi(searchSistemaLomaUrl);
-    let sistemaLomaId = '';
-    
-    if (sistemaLomaSearch.files && sistemaLomaSearch.files.length > 0) {
-      sistemaLomaId = sistemaLomaSearch.files[0].id;
-    } else {
-      // Create it
-      const createSistemaLoma = await callApi('https://www.googleapis.com/drive/v3/files', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: 'Sistema Loma',
-          mimeType: 'application/vnd.google-apps.folder',
-          parents: [mrRobotoId],
-        }),
-      });
-      sistemaLomaId = createSistemaLoma.id;
-    }
-
-    // 4. Create Google Sheet inside "Sistema Loma" folder
-    const createSheetRes = await callApi('https://www.googleapis.com/drive/v3/files', {
-      method: 'POST',
-      body: JSON.stringify({
-        name: `Ventas_Punta_Loma_${todayDate}`,
-        mimeType: 'application/vnd.google-apps.spreadsheet',
-        parents: [sistemaLomaId],
-      }),
-    });
-    const spreadsheetId = createSheetRes.id;
-
-    // 5. Get the first sheet's title
-    const sheetMetadata = await callApi(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}`);
-    const firstSheetTitle = sheetMetadata.sheets?.[0]?.properties?.title || 'Sheet1';
-
-    // 6. Generate Data Rows
-    const headers = [
-      'ID de Venta',
-      'Fecha y Hora',
-      'Cajero (Vendedor)',
-      'Comprador',
-      'Residencia',
-      'Medio de Pago',
-      'Número de Operación / Ref.',
-      'Entradas Extranjeros',
-      'Entradas Nacionales',
-      'Entradas Residentes',
-      'Entradas Menores/Jubilados',
-      'Monto Total ($)'
-    ];
-
-    const rows = sales.map(sale => {
-      const qtyExtranjero = sale.items.filter(i => i.category === 'extranjero').reduce((acc, i) => acc + i.qty, 0);
-      const qtyNacional = sale.items.filter(i => i.category === 'nacional').reduce((acc, i) => acc + i.qty, 0);
-      const qtyResidente = sale.items.filter(i => i.category === 'residente').reduce((acc, i) => acc + i.qty, 0);
-      const qtyMinor = sale.items.filter(i => i.category === 'minor').reduce((acc, i) => acc + i.qty, 0);
-      
-      const saleDate = new Date(sale.timestamp).toLocaleString('es-AR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
-      
-      return [
-        sale.id,
-        saleDate,
-        sale.userName || 'N/C',
-        sale.customerName || 'N/C',
-        sale.customerResidence || 'N/C',
-        sale.paymentMethod || 'N/C',
-        sale.paymentRef || 'N/C',
-        qtyExtranjero.toString(),
-        qtyNacional.toString(),
-        qtyResidente.toString(),
-        qtyMinor.toString(),
-        sale.totalAmount.toString()
-      ];
-    });
-
-    // 7. Write to Google Sheet
-    await callApi(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(firstSheetTitle)}!A1?valueInputOption=USER_ENTERED`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        range: `${firstSheetTitle}!A1`,
-        majorDimension: 'ROWS',
-        values: [
-          headers,
-          ...rows
-        ],
-      }),
-    });
-
-    return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
-  };
-
   const handleExportExcel = async () => {
     setLoading(true);
     setError(null);
@@ -233,17 +94,7 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
     setSheetsUrl(null);
     try {
       const todayDate = new Date().toISOString().split('T')[0];
-      const response = await fetch(`/api/reports/daily?date=${todayDate}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Error al obtener el reporte diario para la exportación.');
-      }
-      
-      const data = await response.json();
+      const data = await reportsService.getDailyStats(token, todayDate);
       const sales: Sale[] = data.salesList || [];
       
       if (sales.length === 0) {
@@ -382,21 +233,8 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
     }
 
     try {
-      const response = await fetch('/api/caja/open', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ initialBalance: balance })
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al abrir la caja.');
-      }
-
-      onCajaChange(data.openCaja);
+      const newCaja = await cajaService.open(token, balance);
+      onCajaChange(newCaja);
       setSuccess('¡Caja abierta exitosamente! Ya puede comenzar a registrar ventas.');
     } catch (err: any) {
       setError(err.message);
@@ -416,19 +254,8 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
     setSuccess(null);
 
     try {
-      const response = await fetch('/api/caja/close', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al cerrar la caja.');
-      }
-
-      setShowReceipt(data.closedCaja);
+      const closedCaja = await cajaService.close(token);
+      setShowReceipt(closedCaja);
       onCajaChange(null);
       setSuccess('¡Caja cerrada correctamente! Turno finalizado.');
     } catch (err: any) {
@@ -465,6 +292,7 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
         {user.role === 'admin' && (
           <button
             type="button"
+            data-testid="caja-export-excel-btn"
             onClick={handleExportExcel}
             disabled={loading}
             className="flex items-center gap-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow-md active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none shrink-0"
@@ -550,6 +378,7 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
 
               <button
                 id="close_caja_btn"
+                data-testid="caja-close-shift-btn"
                 onClick={handleCloseCaja}
                 disabled={loading}
                 className="w-full py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-medium rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
@@ -581,6 +410,7 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
                   </span>
                   <input
                     id="initial_balance_input"
+                    data-testid="caja-initial-balance-input"
                     type="number"
                     value={initialBalance}
                     onChange={(e) => setInitialBalance(e.target.value)}
@@ -595,6 +425,7 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
 
               <button
                 id="open_caja_btn"
+                data-testid="caja-open-shift-btn"
                 type="submit"
                 disabled={loading}
                 className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-medium rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
@@ -657,6 +488,7 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
 
               <button
                 onClick={() => setShowReceipt(null)}
+                data-testid="caja-receipt-accept-btn"
                 className="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition-colors cursor-pointer"
               >
                 Aceptar
@@ -686,7 +518,16 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
           Historial de Cajas y Turnos Recientes
         </h3>
 
-        {cajaHistory.length === 0 ? (
+        {historyLoading ? (
+          <div className="space-y-3 animate-skeleton p-4 rounded-xl">
+            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/4 animate-pulse"></div>
+            <div className="space-y-2.5">
+              {[1, 2, 3].map(n => (
+                <div key={n} className="h-10 bg-slate-100 dark:bg-slate-800 rounded animate-pulse"></div>
+              ))}
+            </div>
+          </div>
+        ) : cajaHistory.length === 0 ? (
           <div className="text-center py-8 text-slate-400 text-sm">
             No se encontraron registros de turnos anteriores.
           </div>
@@ -762,6 +603,7 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
               <button
                 type="button"
                 onClick={() => setConfirmCloseOpen(false)}
+                data-testid="caja-confirm-close-cancel-btn"
                 className="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
               >
                 Cancelar
@@ -769,6 +611,7 @@ export default function CajaManager({ token, user, openCaja, onCajaChange }: Caj
               <button
                 type="button"
                 onClick={executeCloseCaja}
+                data-testid="caja-confirm-close-execute-btn"
                 className="px-4 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer"
               >
                 Sí, Cerrar Caja

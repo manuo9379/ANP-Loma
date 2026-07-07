@@ -12,6 +12,7 @@ import {
   Calendar,
   Compass
 } from 'lucide-react';
+import { ticketService } from '../services/apiService';
 
 interface TicketValidadorProps {
   token: string;
@@ -39,18 +40,7 @@ export default function TicketValidador({ token }: TicketValidadorProps) {
     setScannedTicket(null);
 
     try {
-      const response = await fetch(`/api/tickets/search/${ticketCode.trim().toUpperCase()}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'No se encontró ninguna entrada con ese código.');
-      }
-
+      const data = await ticketService.search(token, ticketCode);
       setScannedTicket(data);
     } catch (err: any) {
       setError(err.message);
@@ -66,21 +56,7 @@ export default function TicketValidador({ token }: TicketValidadorProps) {
     setError(null);
 
     try {
-      const response = await fetch('/api/tickets/validate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ ticketCode: scannedTicket.ticketCode })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al validar la entrada.');
-      }
-
+      const data = await ticketService.validate(token, scannedTicket.ticketCode);
       setSuccessMessage('¡Acceso Autorizado! La entrada se marcó como validada con éxito.');
       setScannedTicket(data.ticket);
       
@@ -150,6 +126,7 @@ export default function TicketValidador({ token }: TicketValidadorProps) {
                 </span>
                 <input
                   id="ticket_search_input"
+                  data-testid="validator-search-input"
                   type="text"
                   value={ticketCode}
                   onChange={(e) => setTicketCode(e.target.value)}
@@ -161,6 +138,7 @@ export default function TicketValidador({ token }: TicketValidadorProps) {
               </div>
               <button
                 id="search_ticket_btn"
+                data-testid="validator-search-btn"
                 type="submit"
                 disabled={loading}
                 className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-medium rounded-xl text-sm transition-all flex items-center gap-1.5 cursor-pointer"
@@ -281,6 +259,7 @@ export default function TicketValidador({ token }: TicketValidadorProps) {
                 {!scannedTicket.validated && (
                   <button
                     id="validate_ticket_btn"
+                    data-testid="validator-validate-btn"
                     onClick={handleValidate}
                     disabled={loading}
                     className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"

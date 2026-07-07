@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LogIn, KeyRound, User as UserIcon, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import LoboMarinoIcon from './LoboMarinoIcon';
+import { authService } from '../services/apiService';
 
 interface LoginProps {
   onLoginSuccess: (token: string, user: { id: string; username: string; role: 'admin' | 'cajero'; name: string }) => void;
@@ -24,20 +25,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Credenciales inválidas');
-      }
-
+      const data = await authService.login(username, password);
       onLoginSuccess(data.token, data.user);
     } catch (err: any) {
       setError(err.message || 'Error al conectar con el servidor.');
@@ -84,6 +72,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
               </span>
               <input
                 id="login_username"
+                data-testid="login-username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -108,6 +97,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
               </span>
               <input
                 id="login_password"
+                data-testid="login-password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -118,6 +108,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
               />
               <button
                 type="button"
+                data-testid="login-show-password-btn"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
               >
@@ -138,6 +129,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           {/* Submit Button */}
           <button
             id="login_submit_btn"
+            data-testid="login-submit-btn"
             type="submit"
             disabled={loading}
             className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-medium rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"

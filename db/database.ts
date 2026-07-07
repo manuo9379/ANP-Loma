@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import Database from 'better-sqlite3';
+import * as bcrypt from 'bcryptjs';
 
 // Define DB directory paths
 const DB_DIR = path.resolve('./db/data');
@@ -8,6 +10,7 @@ const CAJAS_FILE = path.join(DB_DIR, 'cajas.json');
 const SALES_FILE = path.join(DB_DIR, 'sales.json');
 const TICKETS_FILE = path.join(DB_DIR, 'tickets.json');
 const SETTINGS_FILE = path.join(DB_DIR, 'settings.json');
+const SQLITE_FILE = path.join(DB_DIR, 'boleteria.db');
 
 // Interface Declarations
 export interface User {
@@ -67,6 +70,7 @@ export interface Ticket {
   validated: boolean;
   validatedAt?: string;
   validatedBy?: string;
+  qrDataUrl?: string;
 }
 
 export interface SystemSettings {
@@ -78,92 +82,351 @@ export interface SystemSettings {
   };
 }
 
-// Helpers to read and write
+let dbInstance: any = null;
+
+export function getDB() {
+  if (!dbInstance) {
+    ensureDirectoryExistence();
+    dbInstance = new Database(SQLITE_FILE);
+    // Enable WAL mode for performance
+    dbInstance.pragma('journal_mode = WAL');
+    // Enable foreign keys constraint support
+    dbInstance.pragma('foreign_keys = ON');
+  }
+  return dbInstance;
+}
+
 function ensureDirectoryExistence() {
   if (!fs.existsSync(DB_DIR)) {
     fs.mkdirSync(DB_DIR, { recursive: true });
   }
 }
 
-function readJSON<T>(filePath: string, defaultValue: T): T {
-  ensureDirectoryExistence();
-  if (!fs.existsSync(filePath)) {
-    writeJSON(filePath, defaultValue);
-    return defaultValue;
-  }
-  try {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(content) as T;
-  } catch (error) {
-    console.error(`Error reading database file at ${filePath}:`, error);
-    return defaultValue;
-  }
-}
-
-function writeJSON<T>(filePath: string, data: T) {
-  ensureDirectoryExistence();
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (error) {
-    console.error(`Error writing database file at ${filePath}:`, error);
-  }
-}
-
-// Seed Initial Data
+// Seed Initial Data and Migrate JSON to SQLite
 export function initializeDatabase() {
   ensureDirectoryExistence();
+  const db = getDB();
 
-  // 1. Settings
-  const defaultSettings: SystemSettings = {
-    ticketPrices: {
-      extranjero: 10000,
-      nacional: 5000,
-      residente: 2500,
-      minor: 0
+  // Create SQLite Tables with Foreign Key Constraints
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      username TEXT UNIQUE,
+      password TEXT,
+      role TEXT,
+      name TEXT,
+      active INTEGER
+    );
+
+    CREATE TABLE IF NOT EXISTS cajas (
+      id TEXT PRIMARY KEY,
+      userId TEXT,
+      userName TEXT,
+      openTime TEXT,
+      closeTime TEXT,
+      status TEXT,
+      initialBalance REAL,
+      currentSales REAL,
+      finalBalance REAL,
+      salesCount INTEGER,
+      FOREIGN KEY(userId) REFERENCES users(id) ON DELETE RESTRICT
+    );
+
+    CREATE TABLE IF NOT EXISTS sales (
+      id TEXT PRIMARY KEY,
+      timestamp TEXT,
+      cajaId TEXT,
+      userId TEXT,
+      userName TEXT,
+      items TEXT,
+      paymentMethod TEXT,
+      totalAmount REAL,
+      paymentRef TEXT,
+      customerName TEXT,
+      customerDni TEXT,
+      customerResidence TEXT,
+      FOREIGN KEY(cajaId) REFERENCES cajas(id) ON DELETE RESTRICT,
+      FOREIGN KEY(userId) REFERENCES users(id) ON DELETE RESTRICT
+    );
+
+    CREATE TABLE IF NOT EXISTS tickets (
+      id TEXT PRIMARY KEY,
+      saleId TEXT,
+      ticketCode TEXT UNIQUE,
+      category TEXT,
+      price REAL,
+      customerName TEXT,
+      customerDni TEXT,
+      customerResidence TEXT,
+      purchaseDate TEXT,
+      validated INTEGER,
+      validatedAt TEXT,
+      validatedBy TEXT,
+      FOREIGN KEY(saleId) REFERENCES sales(id) ON DELETE CASCADE
+    );
+  `);
+
+  // Performance Indexing
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_sales_timestamp ON sales(timestamp);
+    CREATE INDEX IF NOT EXISTS idx_tickets_purchasedate ON tickets(purchaseDate);
+    CREATE INDEX IF NOT EXISTS idx_cajas_userid ON cajas(userId);
+  `);
+
+  // Schema upgrade for existing databases (adds FOREIGN KEY constraints if missing)
+  try {
+    const schemaCajas = db.prepare("SELECT sql FROM sqlite_schema WHERE name = 'cajas'").get()?.sql || '';
+    if (schemaCajas && !schemaCajas.includes('FOREIGN KEY')) {
+      console.log("Upgrading 'cajas' table schema to add foreign key constraints...");
+      db.exec(`
+        PRAGMA foreign_keys = OFF;
+        ALTER TABLE cajas RENAME TO cajas_old;
+        CREATE TABLE cajas (
+          id TEXT PRIMARY KEY,
+          userId TEXT,
+          userName TEXT,
+          openTime TEXT,
+          closeTime TEXT,
+          status TEXT,
+          initialBalance REAL,
+          currentSales REAL,
+          finalBalance REAL,
+          salesCount INTEGER,
+          FOREIGN KEY(userId) REFERENCES users(id) ON DELETE RESTRICT
+        );
+        INSERT INTO cajas SELECT id, userId, userName, openTime, closeTime, status, initialBalance, currentSales, finalBalance, salesCount FROM cajas_old;
+        DROP TABLE cajas_old;
+        PRAGMA foreign_keys = ON;
+      `);
     }
-  };
-  readJSON<SystemSettings>(SETTINGS_FILE, defaultSettings);
 
-  // 2. Users
-  const defaultUsers: User[] = [
-    { id: 'usr-1', username: 'admin', password: 'admin123', role: 'admin', name: 'Administrador de Área', active: true },
-    { id: 'usr-2', username: 'cajero1', password: 'cajero123', role: 'cajero', name: 'Juan Pérez', active: true },
-    { id: 'usr-3', username: 'cajero2', password: 'cajero123', role: 'cajero', name: 'María Gómez', active: true }
-  ];
-  const users = readJSON<User[]>(USERS_FILE, defaultUsers);
-  // Ensure default users exist if file was empty
-  if (users.length === 0) {
-    writeJSON(USERS_FILE, defaultUsers);
+    const schemaSales = db.prepare("SELECT sql FROM sqlite_schema WHERE name = 'sales'").get()?.sql || '';
+    if (schemaSales && !schemaSales.includes('FOREIGN KEY')) {
+      console.log("Upgrading 'sales' table schema to add foreign key constraints...");
+      db.exec(`
+        PRAGMA foreign_keys = OFF;
+        ALTER TABLE sales RENAME TO sales_old;
+        CREATE TABLE sales (
+          id TEXT PRIMARY KEY,
+          timestamp TEXT,
+          cajaId TEXT,
+          userId TEXT,
+          userName TEXT,
+          items TEXT,
+          paymentMethod TEXT,
+          totalAmount REAL,
+          paymentRef TEXT,
+          customerName TEXT,
+          customerDni TEXT,
+          customerResidence TEXT,
+          FOREIGN KEY(cajaId) REFERENCES cajas(id) ON DELETE RESTRICT,
+          FOREIGN KEY(userId) REFERENCES users(id) ON DELETE RESTRICT
+        );
+        INSERT INTO sales SELECT id, timestamp, cajaId, userId, userName, items, paymentMethod, totalAmount, paymentRef, customerName, customerDni, customerResidence FROM sales_old;
+        DROP TABLE sales_old;
+        PRAGMA foreign_keys = ON;
+      `);
+    }
+
+    const schemaTickets = db.prepare("SELECT sql FROM sqlite_schema WHERE name = 'tickets'").get()?.sql || '';
+    if (schemaTickets && !schemaTickets.includes('FOREIGN KEY')) {
+      console.log("Upgrading 'tickets' table schema to add foreign key constraints...");
+      db.exec(`
+        PRAGMA foreign_keys = OFF;
+        ALTER TABLE tickets RENAME TO tickets_old;
+        CREATE TABLE tickets (
+          id TEXT PRIMARY KEY,
+          saleId TEXT,
+          ticketCode TEXT UNIQUE,
+          category TEXT,
+          price REAL,
+          customerName TEXT,
+          customerDni TEXT,
+          customerResidence TEXT,
+          purchaseDate TEXT,
+          validated INTEGER,
+          validatedAt TEXT,
+          validatedBy TEXT,
+          FOREIGN KEY(saleId) REFERENCES sales(id) ON DELETE CASCADE
+        );
+        INSERT INTO tickets SELECT id, saleId, ticketCode, category, price, customerName, customerDni, customerResidence, purchaseDate, validated, validatedAt, validatedBy FROM tickets_old;
+        DROP TABLE tickets_old;
+        PRAGMA foreign_keys = ON;
+      `);
+    }
+  } catch (schemaErr) {
+    console.error("Error migrating schema constraints:", schemaErr);
   }
 
-  // 3. Historical Sales and Boxes Seeding
-  // We want to seed data if empty, so there is rich visualization out-of-the-box
-  const cajas = readJSON<Caja[]>(CAJAS_FILE, []);
-  const sales = readJSON<Sale[]>(SALES_FILE, []);
-  const tickets = readJSON<Ticket[]>(TICKETS_FILE, []);
+  // Migrate JSON to SQLite if JSON files exist and tables are empty
+  migrateJsonToSqlite(db);
+}
 
-  if (cajas.length === 0 && sales.length === 0) {
-    console.log('Seeding simulated database with 7 days of historical sales...');
-    const seedCajas: Caja[] = [];
-    const seedSales: Sale[] = [];
-    const seedTickets: Ticket[] = [];
+function migrateJsonToSqlite(db: any) {
+  // 1. Settings
+  const settingsCount = db.prepare("SELECT COUNT(*) as count FROM settings").get().count;
+  if (settingsCount === 0) {
+    const defaultSettings: SystemSettings = {
+      ticketPrices: { extranjero: 10000, nacional: 5000, residente: 2500, minor: 0 }
+    };
+    let currentSettings = defaultSettings;
+    if (fs.existsSync(SETTINGS_FILE)) {
+      try {
+        currentSettings = JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf-8'));
+      } catch (e) {
+        console.error("Error reading SETTINGS_FILE during migration:", e);
+      }
+    }
+    db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)")
+      .run('system_settings', JSON.stringify(currentSettings));
+  }
 
-    // Category configurations
-    const categories = [
-      { key: 'extranjero', price: 10000 },
-      { key: 'nacional', price: 5000 },
-      { key: 'residente', price: 2500 },
-      { key: 'minor', price: 0 }
-    ] as const;
-
-    const paymentMethods = ['Transferencia', 'Tarjeta de Crédito', 'Tarjeta de Débito', 'Mercado Pago'] as const;
-
-    const names = [
-      'Carlos Bianchi', 'Ana Martínez', 'Esteban Quito', 'Sofía Rodríguez', 'Mateo López', 
-      'Lucía Fernández', 'Bautista González', 'Catalina Díaz', 'John Doe', 'Pierre Dupont', 
-      'Hans Müller', 'Emily Smith', 'Yuki Tanaka', 'Pedro Chubut'
+  // 2. Users
+  const usersCount = db.prepare("SELECT COUNT(*) as count FROM users").get().count;
+  if (usersCount === 0) {
+    const defaultUsers: User[] = [
+      { id: 'usr-1', username: 'admin', password: 'admin123', role: 'admin', name: 'Administrador de Área', active: true },
+      { id: 'usr-2', username: 'cajero1', password: 'cajero123', role: 'cajero', name: 'Juan Pérez', active: true },
+      { id: 'usr-3', username: 'cajero2', password: 'cajero123', role: 'cajero', name: 'María Gómez', active: true }
     ];
+    let currentUsers = defaultUsers;
+    if (fs.existsSync(USERS_FILE)) {
+      try {
+        const fileContent = fs.readFileSync(USERS_FILE, 'utf-8');
+        const parsed = JSON.parse(fileContent);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          currentUsers = parsed;
+        }
+      } catch (e) {
+        console.error("Error reading USERS_FILE during migration:", e);
+      }
+    }
+    const insertUser = db.prepare("INSERT OR REPLACE INTO users (id, username, password, role, name, active) VALUES (?, ?, ?, ?, ?, ?)");
+    const trans = db.transaction((usersList: User[]) => {
+      for (const u of usersList) {
+        const rawPassword = u.password || 'cajero123';
+        const passwordHash = (rawPassword.startsWith('$2a$') || rawPassword.startsWith('$2b$'))
+          ? rawPassword
+          : bcrypt.hashSync(rawPassword, 10);
+        insertUser.run(u.id, u.username, passwordHash, u.role, u.name, u.active ? 1 : 0);
+      }
+    });
+    trans(currentUsers);
+  }
 
+  // 3. Cajas
+  const cajasCount = db.prepare("SELECT COUNT(*) as count FROM cajas").get().count;
+  if (cajasCount === 0 && fs.existsSync(CAJAS_FILE)) {
+    try {
+      const fileContent = fs.readFileSync(CAJAS_FILE, 'utf-8');
+      const cajasList: Caja[] = JSON.parse(fileContent);
+      if (Array.isArray(cajasList) && cajasList.length > 0) {
+        const insertCaja = db.prepare("INSERT INTO cajas (id, userId, userName, openTime, closeTime, status, initialBalance, currentSales, finalBalance, salesCount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        const trans = db.transaction((list: Caja[]) => {
+          for (const c of list) {
+            insertCaja.run(c.id, c.userId, c.userName, c.openTime, c.closeTime, c.status, c.initialBalance, c.currentSales, c.finalBalance, c.salesCount);
+          }
+        });
+        trans(cajasList);
+      }
+    } catch (e) {
+      console.error("Error reading CAJAS_FILE during migration:", e);
+    }
+  }
+
+  // 4. Sales
+  const salesCount = db.prepare("SELECT COUNT(*) as count FROM sales").get().count;
+  if (salesCount === 0 && fs.existsSync(SALES_FILE)) {
+    try {
+      const fileContent = fs.readFileSync(SALES_FILE, 'utf-8');
+      const salesList: Sale[] = JSON.parse(fileContent);
+      if (Array.isArray(salesList) && salesList.length > 0) {
+        const insertSale = db.prepare("INSERT INTO sales (id, timestamp, cajaId, userId, userName, items, paymentMethod, totalAmount, paymentRef, customerName, customerDni, customerResidence) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        const trans = db.transaction((list: Sale[]) => {
+          for (const s of list) {
+            insertSale.run(s.id, s.timestamp, s.cajaId, s.userId, s.userName, JSON.stringify(s.items), s.paymentMethod, s.totalAmount, s.paymentRef, s.customerName || '', s.customerDni || '', s.customerResidence || '');
+          }
+        });
+        trans(salesList);
+      }
+    } catch (e) {
+      console.error("Error reading SALES_FILE during migration:", e);
+    }
+  }
+
+  // 5. Tickets
+  const ticketsCount = db.prepare("SELECT COUNT(*) as count FROM tickets").get().count;
+  if (ticketsCount === 0 && fs.existsSync(TICKETS_FILE)) {
+    try {
+      const fileContent = fs.readFileSync(TICKETS_FILE, 'utf-8');
+      const ticketsList: Ticket[] = JSON.parse(fileContent);
+      if (Array.isArray(ticketsList) && ticketsList.length > 0) {
+        const insertTicket = db.prepare("INSERT INTO tickets (id, saleId, ticketCode, category, price, customerName, customerDni, customerResidence, purchaseDate, validated, validatedAt, validatedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        const trans = db.transaction((list: Ticket[]) => {
+          for (const t of list) {
+            insertTicket.run(t.id, t.saleId, t.ticketCode, t.category, t.price, t.customerName || '', t.customerDni || '', t.customerResidence || '', t.purchaseDate, t.validated ? 1 : 0, t.validatedAt || null, t.validatedBy || null);
+          }
+        });
+        trans(ticketsList);
+      }
+    } catch (e) {
+      console.error("Error reading TICKETS_FILE during migration:", e);
+    }
+  }
+
+  // Seed default data if empty database (no json files and tables are empty)
+  const hasCajas = db.prepare("SELECT COUNT(*) as count FROM cajas").get().count > 0;
+  const hasSales = db.prepare("SELECT COUNT(*) as count FROM sales").get().count > 0;
+  if (!hasCajas && !hasSales) {
+    console.log("Seeding simulated SQLite database with 7 days of historical sales...");
+    seedSimulatedSqlite(db);
+  }
+
+  // Optional: Back up / rename old JSON files to avoid migrating them again next start
+  try {
+    const backupJsonDir = path.join(DB_DIR, 'json_backup');
+    if (!fs.existsSync(backupJsonDir)) {
+      fs.mkdirSync(backupJsonDir);
+    }
+    const jsonFiles = [SETTINGS_FILE, USERS_FILE, CAJAS_FILE, SALES_FILE, TICKETS_FILE];
+    for (const f of jsonFiles) {
+      if (fs.existsSync(f)) {
+        fs.renameSync(f, path.join(backupJsonDir, path.basename(f)));
+      }
+    }
+  } catch (err) {
+    console.error("Error backing up migrated JSON files:", err);
+  }
+}
+
+function seedSimulatedSqlite(db: any) {
+  // Category configurations
+  const categories = [
+    { key: 'extranjero', price: 10000 },
+    { key: 'nacional', price: 5000 },
+    { key: 'residente', price: 2500 },
+    { key: 'minor', price: 0 }
+  ] as const;
+
+  const paymentMethods = ['Transferencia', 'Tarjeta de Crédito', 'Tarjeta de Débito', 'Mercado Pago'] as const;
+
+  const names = [
+    'Carlos Bianchi', 'Ana Martínez', 'Esteban Quito', 'Sofía Rodríguez', 'Mateo López', 
+    'Lucía Fernández', 'Bautista González', 'Catalina Díaz', 'John Doe', 'Pierre Dupont', 
+    'Hans Müller', 'Emily Smith', 'Yuki Tanaka', 'Pedro Chubut'
+  ];
+
+  const insertCaja = db.prepare("INSERT INTO cajas (id, userId, userName, openTime, closeTime, status, initialBalance, currentSales, finalBalance, salesCount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+  const insertSale = db.prepare("INSERT INTO sales (id, timestamp, cajaId, userId, userName, items, paymentMethod, totalAmount, paymentRef, customerName, customerDni, customerResidence) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+  const insertTicket = db.prepare("INSERT INTO tickets (id, saleId, ticketCode, category, price, customerName, customerDni, customerResidence, purchaseDate, validated, validatedAt, validatedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+  // Run in a transaction for speed and safety
+  const seedTransaction = db.transaction(() => {
     // Seed data over past 7 days (June 24 to June 30, 2026)
     for (let dayOffset = 7; dayOffset >= 1; dayOffset--) {
       const date = new Date('2026-07-01T10:00:00-03:00');
@@ -184,7 +447,6 @@ export function initializeDatabase() {
         let currentSales = 0;
         let salesCount = 0;
 
-        // Generate sales inside this shift
         const salesInShift = Math.floor(Math.random() * 8) + 5; // 5-12 sales per shift
 
         for (let s = 0; s < salesInShift; s++) {
@@ -192,11 +454,9 @@ export function initializeDatabase() {
           const saleMinutes = Math.floor(Math.random() * 240); // within 4 hours
           const saleTime = new Date(new Date(openTime).getTime() + saleMinutes * 60000).toISOString();
 
-          // Items inside this sale
           const saleItems: SaleItem[] = [];
           let saleTotal = 0;
 
-          // Pick 1-3 categories of tickets
           const numCategoriesInSale = Math.floor(Math.random() * 2) + 1;
           const shuffledCategories = [...categories].sort(() => Math.random() - 0.5);
 
@@ -214,132 +474,185 @@ export function initializeDatabase() {
 
             saleTotal += total;
 
-            // Generate tickets
             for (let t = 0; t < qty; t++) {
               const ticketId = `ticket-${saleId}-${cat.key}-${t}`;
               const ticketCode = `PL-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
               const custIndex = Math.floor(Math.random() * names.length);
               const name = names[custIndex];
               const dni = Math.floor(10000000 + Math.random() * 40000000).toString();
-
-              // Foreigners might not have numeric DNI, random passport format
               const finalDni = cat.key === 'extranjero' ? `PA-${Math.random().toString(36).substring(2, 8).toUpperCase()}` : dni;
 
-              // Some tickets might have been validated (especially past days)
-              const validated = dayOffset > 1 || Math.random() > 0.3; // mostly validated if past days
-              const validatedAt = validated ? new Date(new Date(saleTime).getTime() + 15 * 60000).toISOString() : undefined;
-              const validatedBy = validated ? 'usr-1' : undefined;
+              const validated = dayOffset > 1 || Math.random() > 0.3;
+              const validatedAt = validated ? new Date(new Date(saleTime).getTime() + 15 * 60000).toISOString() : null;
+              const validatedBy = validated ? 'usr-1' : null;
 
-              seedTickets.push({
-                id: ticketId,
+              insertTicket.run(
+                ticketId,
                 saleId,
                 ticketCode,
-                category: cat.key,
-                price: cat.price,
-                customerName: name,
-                customerDni: finalDni,
-                purchaseDate: saleTime,
-                validated,
+                cat.key,
+                cat.price,
+                name,
+                finalDni,
+                'Argentina',
+                saleTime,
+                validated ? 1 : 0,
                 validatedAt,
                 validatedBy
-              });
+              );
             }
           }
 
           const paymentMethod = paymentMethods[Math.floor(Math.random() * paymentMethods.length)];
           const paymentRef = `E-${Math.floor(10000000 + Math.random() * 90000000)}`;
 
-          seedSales.push({
-            id: saleId,
-            timestamp: saleTime,
+          insertSale.run(
+            saleId,
+            saleTime,
             cajaId,
-            userId: shift.user.id,
-            userName: shift.user.name,
-            items: saleItems,
+            shift.user.id,
+            shift.user.name,
+            JSON.stringify(saleItems),
             paymentMethod,
-            totalAmount: saleTotal,
+            saleTotal,
             paymentRef,
-            customerName: names[Math.floor(Math.random() * names.length)],
-            customerDni: Math.floor(20000000 + Math.random() * 25000000).toString()
-          });
+            names[Math.floor(Math.random() * names.length)],
+            Math.floor(20000000 + Math.random() * 25000000).toString(),
+            'Argentina'
+          );
 
           currentSales += saleTotal;
           salesCount++;
         }
 
-        seedCajas.push({
-          id: cajaId,
-          userId: shift.user.id,
-          userName: shift.user.name,
+        insertCaja.run(
+          cajaId,
+          shift.user.id,
+          shift.user.name,
           openTime,
           closeTime,
-          status: 'closed',
-          initialBalance: 0, // all electronic, standard starts at 0
+          'closed',
+          0,
           currentSales,
-          finalBalance: currentSales,
+          currentSales,
           salesCount
-        });
+        );
       });
     }
+  });
 
-    writeJSON(CAJAS_FILE, seedCajas);
-    writeJSON(SALES_FILE, seedSales);
-    writeJSON(TICKETS_FILE, seedTickets);
-    console.log(`Database seeded successfully! Added ${seedCajas.length} shifts, ${seedSales.length} transactions, and ${seedTickets.length} tickets.`);
-  }
+  seedTransaction();
 }
 
 // DB Data Actions
 
 // Settings Accessors
 export function getSettings(): SystemSettings {
-  return readJSON<SystemSettings>(SETTINGS_FILE, {
+  const db = getDB();
+  const row = db.prepare("SELECT value FROM settings WHERE key = ?").get('system_settings');
+  if (row) {
+    return JSON.parse(row.value);
+  }
+  return {
     ticketPrices: { extranjero: 10000, nacional: 5000, residente: 2500, minor: 0 }
-  });
+  };
 }
 
 export function saveSettings(settings: SystemSettings) {
-  writeJSON(SETTINGS_FILE, settings);
+  const db = getDB();
+  db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)")
+    .run('system_settings', JSON.stringify(settings));
 }
 
 // User Actions
 export function getUsers(): User[] {
-  const users = readJSON<User[]>(USERS_FILE, []);
-  // Return users without passwords for security
-  return users;
+  const db = getDB();
+  const rows = db.prepare("SELECT id, username, role, name, active FROM users").all();
+  return rows.map((r: any) => ({
+    id: r.id,
+    username: r.username,
+    role: r.role,
+    name: r.name,
+    active: r.active === 1
+  }));
 }
 
 export function saveUsers(users: User[]) {
-  // Read existing file to preserve passwords of existing users if editing
-  const existingUsers = readJSON<User[]>(USERS_FILE, []);
-  const updatedWithPasswords = users.map(u => {
-    const existing = existingUsers.find(ex => ex.id === u.id);
-    return {
-      ...u,
-      password: u.password || existing?.password || 'cajero123' // fallback
-    };
+  const db = getDB();
+  // Get all existing users to preserve passwords if editing
+  const existingUsers = db.prepare("SELECT id, password FROM users").all();
+  const insertUser = db.prepare("INSERT OR REPLACE INTO users (id, username, password, role, name, active) VALUES (?, ?, ?, ?, ?, ?)");
+  
+  const trans = db.transaction((usersList: User[]) => {
+    for (const u of usersList) {
+      const existing = existingUsers.find((ex: any) => ex.id === u.id);
+      let password = u.password || existing?.password || 'cajero123';
+      if (u.password && !u.password.startsWith('$2a$') && !u.password.startsWith('$2b$')) {
+        password = bcrypt.hashSync(u.password, 10);
+      }
+      insertUser.run(u.id, u.username, password, u.role, u.name, u.active ? 1 : 0);
+    }
   });
-  writeJSON(USERS_FILE, updatedWithPasswords);
+  trans(users);
 }
 
 export function getUserWithPassword(username: string): User | undefined {
-  const users = readJSON<User[]>(USERS_FILE, []);
-  return users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.active);
+  const db = getDB();
+  const row = db.prepare("SELECT id, username, password, role, name, active FROM users WHERE LOWER(username) = LOWER(?) AND active = 1").get(username);
+  if (row) {
+    return {
+      id: row.id,
+      username: row.username,
+      password: row.password,
+      role: row.role,
+      name: row.name,
+      active: row.active === 1
+    };
+  }
+  return undefined;
 }
 
 // Caja Actions
 export function getCajas(): Caja[] {
-  return readJSON<Caja[]>(CAJAS_FILE, []);
+  const db = getDB();
+  const rows = db.prepare("SELECT id, userId, userName, openTime, closeTime, status, initialBalance, currentSales, finalBalance, salesCount FROM cajas").all();
+  return rows.map((r: any) => ({
+    id: r.id,
+    userId: r.userId,
+    userName: r.userName,
+    openTime: r.openTime,
+    closeTime: r.closeTime,
+    status: r.status,
+    initialBalance: r.initialBalance,
+    currentSales: r.currentSales,
+    finalBalance: r.finalBalance,
+    salesCount: r.salesCount
+  }));
 }
 
 export function getOpenCaja(userId: string): Caja | undefined {
-  const cajas = getCajas();
-  return cajas.find(c => c.userId === userId && c.status === 'open');
+  const db = getDB();
+  const row = db.prepare("SELECT id, userId, userName, openTime, closeTime, status, initialBalance, currentSales, finalBalance, salesCount FROM cajas WHERE userId = ? AND status = 'open'").get(userId);
+  if (row) {
+    return {
+      id: row.id,
+      userId: row.userId,
+      userName: row.userName,
+      openTime: row.openTime,
+      closeTime: r.closeTime,
+      status: row.status,
+      initialBalance: row.initialBalance,
+      currentSales: row.currentSales,
+      finalBalance: row.finalBalance,
+      salesCount: row.salesCount
+    };
+  }
+  return undefined;
 }
 
 export function openCaja(userId: string, userName: string, initialBalance: number): Caja {
-  const cajas = getCajas();
-  const existingOpen = cajas.find(c => c.userId === userId && c.status === 'open');
+  const db = getDB();
+  const existingOpen = getOpenCaja(userId);
   if (existingOpen) {
     return existingOpen;
   }
@@ -357,34 +670,76 @@ export function openCaja(userId: string, userName: string, initialBalance: numbe
     salesCount: 0
   };
 
-  cajas.push(newCaja);
-  writeJSON(CAJAS_FILE, cajas);
+  db.prepare("INSERT INTO cajas (id, userId, userName, openTime, closeTime, status, initialBalance, currentSales, finalBalance, salesCount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    .run(newCaja.id, newCaja.userId, newCaja.userName, newCaja.openTime, newCaja.closeTime, newCaja.status, newCaja.initialBalance, newCaja.currentSales, newCaja.finalBalance, newCaja.salesCount);
+
   return newCaja;
 }
 
 export function closeCaja(cajaId: string): Caja {
-  const cajas = getCajas();
-  const index = cajas.findIndex(c => c.id === cajaId);
-  if (index === -1) {
+  const db = getDB();
+  const row = db.prepare("SELECT id, userId, userName, openTime, closeTime, status, initialBalance, currentSales, finalBalance, salesCount FROM cajas WHERE id = ?").get(cajaId);
+  if (!row) {
     throw new Error('Caja no encontrada');
   }
 
-  const caja = cajas[index];
-  caja.status = 'closed';
-  caja.closeTime = new Date().toISOString();
-  caja.finalBalance = caja.initialBalance + caja.currentSales;
+  const closeTime = new Date().toISOString();
+  const finalBalance = row.initialBalance + row.currentSales;
 
-  writeJSON(CAJAS_FILE, cajas);
-  return caja;
+  db.prepare("UPDATE cajas SET status = 'closed', closeTime = ?, finalBalance = ? WHERE id = ?")
+    .run(closeTime, finalBalance, cajaId);
+
+  return {
+    id: row.id,
+    userId: row.userId,
+    userName: row.userName,
+    openTime: row.openTime,
+    closeTime,
+    status: 'closed',
+    initialBalance: row.initialBalance,
+    currentSales: row.currentSales,
+    finalBalance,
+    salesCount: row.salesCount
+  };
 }
 
 // Sales Actions
 export function getSales(): Sale[] {
-  return readJSON<Sale[]>(SALES_FILE, []);
+  const db = getDB();
+  const rows = db.prepare("SELECT id, timestamp, cajaId, userId, userName, items, paymentMethod, totalAmount, paymentRef, customerName, customerDni, customerResidence FROM sales").all();
+  return rows.map((r: any) => ({
+    id: r.id,
+    timestamp: r.timestamp,
+    cajaId: r.cajaId,
+    userId: r.userId,
+    userName: r.userName,
+    items: JSON.parse(r.items),
+    paymentMethod: r.paymentMethod,
+    totalAmount: r.totalAmount,
+    paymentRef: r.paymentRef,
+    customerName: r.customerName || undefined,
+    customerDni: r.customerDni || undefined,
+    customerResidence: r.customerResidence || undefined
+  }));
 }
 
 export function getTickets(): Ticket[] {
-  return readJSON<Ticket[]>(TICKETS_FILE, []);
+  const db = getDB();
+  const rows = db.prepare("SELECT id, saleId, ticketCode, category, price, customerName, customerDni, customerResidence, purchaseDate, validated, validatedAt, validatedBy FROM tickets").all();
+  return rows.map((r: any) => ({
+    id: r.id,
+    saleId: r.saleId,
+    ticketCode: r.ticketCode,
+    category: r.category,
+    price: r.price,
+    customerName: r.customerName || undefined,
+    customerDni: r.customerDni || undefined,
+    customerResidence: r.customerResidence || undefined,
+    purchaseDate: r.purchaseDate,
+    validated: r.validated === 1,
+    validatedAt: r.validatedAt || undefined,
+    validatedBy: r.validatedBy || undefined
+  }));
 }
 
 export function createSale(
@@ -398,9 +753,9 @@ export function createSale(
   customerDni?: string,
   customerResidence?: string
 ): { sale: Sale; tickets: Ticket[] } {
-  const cajas = getCajas();
-  const cajaIndex = cajas.findIndex(c => c.id === cajaId && c.status === 'open');
-  if (cajaIndex === -1) {
+  const db = getDB();
+  const caja = db.prepare("SELECT id, initialBalance, currentSales, status FROM cajas WHERE id = ? AND status = 'open'").get(cajaId);
+  if (!caja) {
     throw new Error('La caja no está abierta o no existe.');
   }
 
@@ -461,42 +816,70 @@ export function createSale(
     customerResidence
   };
 
-  // Save Sale
-  const sales = getSales();
-  sales.push(newSale);
-  writeJSON(SALES_FILE, sales);
+  const runTransaction = db.transaction(() => {
+    // 1. Insert Sale
+    db.prepare("INSERT INTO sales (id, timestamp, cajaId, userId, userName, items, paymentMethod, totalAmount, paymentRef, customerName, customerDni, customerResidence) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+      .run(
+        newSale.id,
+        newSale.timestamp,
+        newSale.cajaId,
+        newSale.userId,
+        newSale.userName,
+        JSON.stringify(newSale.items),
+        newSale.paymentMethod,
+        newSale.totalAmount,
+        newSale.paymentRef,
+        newSale.customerName || '',
+        newSale.customerDni || '',
+        newSale.customerResidence || ''
+      );
 
-  // Save Tickets
-  const tickets = getTickets();
-  tickets.push(...createdTickets);
-  writeJSON(TICKETS_FILE, tickets);
+    // 2. Insert Tickets
+    const insertTicket = db.prepare("INSERT INTO tickets (id, saleId, ticketCode, category, price, customerName, customerDni, customerResidence, purchaseDate, validated, validatedAt, validatedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    for (const t of createdTickets) {
+      insertTicket.run(t.id, t.saleId, t.ticketCode, t.category, t.price, t.customerName || '', t.customerDni || '', t.customerResidence || '', t.purchaseDate, 0, null, null);
+    }
 
-  // Update Caja balances
-  cajas[cajaIndex].currentSales += saleTotal;
-  cajas[cajaIndex].salesCount += 1;
-  cajas[cajaIndex].finalBalance = cajas[cajaIndex].initialBalance + cajas[cajaIndex].currentSales;
-  writeJSON(CAJAS_FILE, cajas);
+    // 3. Update Caja balances
+    const newCurrentSales = caja.currentSales + saleTotal;
+    const newFinalBalance = caja.initialBalance + newCurrentSales;
+    db.prepare("UPDATE cajas SET currentSales = ?, salesCount = salesCount + 1, finalBalance = ? WHERE id = ?")
+      .run(newCurrentSales, newFinalBalance, cajaId);
+  });
+
+  runTransaction();
 
   return { sale: newSale, tickets: createdTickets };
 }
 
 // Ticket Validation
 export function validateTicket(ticketCode: string, validatedBy: string): Ticket {
-  const tickets = getTickets();
-  const index = tickets.findIndex(t => t.ticketCode.toUpperCase() === ticketCode.toUpperCase());
-  if (index === -1) {
+  const db = getDB();
+  const ticket = db.prepare("SELECT id, saleId, ticketCode, category, price, customerName, customerDni, customerResidence, purchaseDate, validated, validatedAt, validatedBy FROM tickets WHERE UPPER(ticketCode) = UPPER(?)").get(ticketCode);
+  if (!ticket) {
     throw new Error('Código de entrada inválido o no existente');
   }
 
-  const ticket = tickets[index];
-  if (ticket.validated) {
-    throw new Error(`Esta entrada ya fue validada el ${new Date(ticket.validatedAt!).toLocaleString('es-AR')}`);
+  if (ticket.validated === 1) {
+    throw new Error(`Esta entrada ya fue validada el ${new Date(ticket.validatedAt).toLocaleString('es-AR')}`);
   }
 
-  ticket.validated = true;
-  ticket.validatedAt = new Date().toISOString();
-  ticket.validatedBy = validatedBy;
+  const validatedAt = new Date().toISOString();
+  db.prepare("UPDATE tickets SET validated = 1, validatedAt = ?, validatedBy = ? WHERE id = ?")
+    .run(validatedAt, validatedBy, ticket.id);
 
-  writeJSON(TICKETS_FILE, tickets);
-  return ticket;
+  return {
+    id: ticket.id,
+    saleId: ticket.saleId,
+    ticketCode: ticket.ticketCode,
+    category: ticket.category,
+    price: ticket.price,
+    customerName: ticket.customerName || undefined,
+    customerDni: ticket.customerDni || undefined,
+    customerResidence: ticket.customerResidence || undefined,
+    purchaseDate: ticket.purchaseDate,
+    validated: true,
+    validatedAt,
+    validatedBy
+  };
 }

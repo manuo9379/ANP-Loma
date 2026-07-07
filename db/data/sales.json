@@ -1,0 +1,2862 @@
+[
+  {
+    "id": "sale-caja-2026-06-24-0-0",
+    "timestamp": "2026-06-24T13:21:00.000Z",
+    "cajaId": "caja-2026-06-24-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      },
+      {
+        "category": "residente",
+        "qty": 2,
+        "price": 2500,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 20000,
+    "paymentRef": "E-58726675",
+    "customerName": "Emily Smith",
+    "customerDni": "41952394"
+  },
+  {
+    "id": "sale-caja-2026-06-24-0-1",
+    "timestamp": "2026-06-24T14:12:00.000Z",
+    "cajaId": "caja-2026-06-24-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      },
+      {
+        "category": "residente",
+        "qty": 2,
+        "price": 2500,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 25000,
+    "paymentRef": "E-92668067",
+    "customerName": "John Doe",
+    "customerDni": "44839024"
+  },
+  {
+    "id": "sale-caja-2026-06-24-0-2",
+    "timestamp": "2026-06-24T14:07:00.000Z",
+    "cajaId": "caja-2026-06-24-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 10000,
+    "paymentRef": "E-29787118",
+    "customerName": "Sofía Rodríguez",
+    "customerDni": "23579476"
+  },
+  {
+    "id": "sale-caja-2026-06-24-0-3",
+    "timestamp": "2026-06-24T13:13:00.000Z",
+    "cajaId": "caja-2026-06-24-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 15000,
+    "paymentRef": "E-27641490",
+    "customerName": "Pedro Chubut",
+    "customerDni": "28248932"
+  },
+  {
+    "id": "sale-caja-2026-06-24-0-4",
+    "timestamp": "2026-06-24T13:18:00.000Z",
+    "cajaId": "caja-2026-06-24-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 30000,
+    "paymentRef": "E-13992609",
+    "customerName": "John Doe",
+    "customerDni": "37508768"
+  },
+  {
+    "id": "sale-caja-2026-06-24-0-5",
+    "timestamp": "2026-06-24T14:16:00.000Z",
+    "cajaId": "caja-2026-06-24-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      },
+      {
+        "category": "residente",
+        "qty": 3,
+        "price": 2500,
+        "total": 7500
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 12500,
+    "paymentRef": "E-57123575",
+    "customerName": "Catalina Díaz",
+    "customerDni": "24985537"
+  },
+  {
+    "id": "sale-caja-2026-06-24-0-6",
+    "timestamp": "2026-06-24T14:41:00.000Z",
+    "cajaId": "caja-2026-06-24-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 0,
+    "paymentRef": "E-37091432",
+    "customerName": "Emily Smith",
+    "customerDni": "42389558"
+  },
+  {
+    "id": "sale-caja-2026-06-24-0-7",
+    "timestamp": "2026-06-24T13:27:00.000Z",
+    "cajaId": "caja-2026-06-24-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 30000,
+    "paymentRef": "E-28213846",
+    "customerName": "Lucía Fernández",
+    "customerDni": "44066769"
+  },
+  {
+    "id": "sale-caja-2026-06-24-0-8",
+    "timestamp": "2026-06-24T11:17:00.000Z",
+    "cajaId": "caja-2026-06-24-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 20000,
+    "paymentRef": "E-51123179",
+    "customerName": "Hans Müller",
+    "customerDni": "43376344"
+  },
+  {
+    "id": "sale-caja-2026-06-24-1-0",
+    "timestamp": "2026-06-24T16:05:00.000Z",
+    "cajaId": "caja-2026-06-24-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 15000,
+    "paymentRef": "E-39491195",
+    "customerName": "Ana Martínez",
+    "customerDni": "25672504"
+  },
+  {
+    "id": "sale-caja-2026-06-24-1-1",
+    "timestamp": "2026-06-24T16:08:00.000Z",
+    "cajaId": "caja-2026-06-24-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      },
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 25000,
+    "paymentRef": "E-90173694",
+    "customerName": "Sofía Rodríguez",
+    "customerDni": "22729057"
+  },
+  {
+    "id": "sale-caja-2026-06-24-1-2",
+    "timestamp": "2026-06-24T19:28:00.000Z",
+    "cajaId": "caja-2026-06-24-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 1,
+        "price": 2500,
+        "total": 2500
+      },
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 17500,
+    "paymentRef": "E-42497988",
+    "customerName": "Pedro Chubut",
+    "customerDni": "41098998"
+  },
+  {
+    "id": "sale-caja-2026-06-24-1-3",
+    "timestamp": "2026-06-24T18:04:00.000Z",
+    "cajaId": "caja-2026-06-24-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 10000,
+    "paymentRef": "E-96832809",
+    "customerName": "Hans Müller",
+    "customerDni": "37574574"
+  },
+  {
+    "id": "sale-caja-2026-06-24-1-4",
+    "timestamp": "2026-06-24T19:51:00.000Z",
+    "cajaId": "caja-2026-06-24-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      },
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 20000,
+    "paymentRef": "E-19970293",
+    "customerName": "Esteban Quito",
+    "customerDni": "25155306"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-0",
+    "timestamp": "2026-06-25T13:41:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      },
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 5000,
+    "paymentRef": "E-39355139",
+    "customerName": "Esteban Quito",
+    "customerDni": "24257232"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-1",
+    "timestamp": "2026-06-25T13:09:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 10000,
+    "paymentRef": "E-96289024",
+    "customerName": "Pierre Dupont",
+    "customerDni": "44864308"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-2",
+    "timestamp": "2026-06-25T12:50:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 0,
+    "paymentRef": "E-92108747",
+    "customerName": "Pierre Dupont",
+    "customerDni": "20253885"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-3",
+    "timestamp": "2026-06-25T11:28:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 20000,
+    "paymentRef": "E-24943998",
+    "customerName": "Pierre Dupont",
+    "customerDni": "20771039"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-4",
+    "timestamp": "2026-06-25T12:24:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "residente",
+        "qty": 1,
+        "price": 2500,
+        "total": 2500
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 2500,
+    "paymentRef": "E-53707726",
+    "customerName": "Esteban Quito",
+    "customerDni": "32764748"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-5",
+    "timestamp": "2026-06-25T13:00:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "residente",
+        "qty": 2,
+        "price": 2500,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 15000,
+    "paymentRef": "E-73661615",
+    "customerName": "Yuki Tanaka",
+    "customerDni": "22917975"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-6",
+    "timestamp": "2026-06-25T11:05:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 0,
+    "paymentRef": "E-46754697",
+    "customerName": "Catalina Díaz",
+    "customerDni": "38704585"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-7",
+    "timestamp": "2026-06-25T13:36:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "minor",
+        "qty": 3,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 10000,
+    "paymentRef": "E-52629283",
+    "customerName": "Ana Martínez",
+    "customerDni": "38225732"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-8",
+    "timestamp": "2026-06-25T11:33:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 10000,
+    "paymentRef": "E-37319926",
+    "customerName": "Pierre Dupont",
+    "customerDni": "24648538"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-9",
+    "timestamp": "2026-06-25T13:01:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      },
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 30000,
+    "paymentRef": "E-92559499",
+    "customerName": "Pierre Dupont",
+    "customerDni": "34071061"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-10",
+    "timestamp": "2026-06-25T13:28:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 10000,
+    "paymentRef": "E-40390866",
+    "customerName": "Pierre Dupont",
+    "customerDni": "42054357"
+  },
+  {
+    "id": "sale-caja-2026-06-25-0-11",
+    "timestamp": "2026-06-25T12:50:00.000Z",
+    "cajaId": "caja-2026-06-25-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 5000,
+    "paymentRef": "E-85462043",
+    "customerName": "Ana Martínez",
+    "customerDni": "34778647"
+  },
+  {
+    "id": "sale-caja-2026-06-25-1-0",
+    "timestamp": "2026-06-25T18:44:00.000Z",
+    "cajaId": "caja-2026-06-25-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 10000,
+    "paymentRef": "E-19330638",
+    "customerName": "Pierre Dupont",
+    "customerDni": "41638298"
+  },
+  {
+    "id": "sale-caja-2026-06-25-1-1",
+    "timestamp": "2026-06-25T16:40:00.000Z",
+    "cajaId": "caja-2026-06-25-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      },
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 45000,
+    "paymentRef": "E-63029599",
+    "customerName": "Hans Müller",
+    "customerDni": "32518619"
+  },
+  {
+    "id": "sale-caja-2026-06-25-1-2",
+    "timestamp": "2026-06-25T16:19:00.000Z",
+    "cajaId": "caja-2026-06-25-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 10000,
+    "paymentRef": "E-34872872",
+    "customerName": "Emily Smith",
+    "customerDni": "39514469"
+  },
+  {
+    "id": "sale-caja-2026-06-25-1-3",
+    "timestamp": "2026-06-25T17:58:00.000Z",
+    "cajaId": "caja-2026-06-25-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 15000,
+    "paymentRef": "E-28819700",
+    "customerName": "Sofía Rodríguez",
+    "customerDni": "30513772"
+  },
+  {
+    "id": "sale-caja-2026-06-25-1-4",
+    "timestamp": "2026-06-25T17:33:00.000Z",
+    "cajaId": "caja-2026-06-25-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 15000,
+    "paymentRef": "E-19661415",
+    "customerName": "Bautista González",
+    "customerDni": "29069438"
+  },
+  {
+    "id": "sale-caja-2026-06-25-1-5",
+    "timestamp": "2026-06-25T19:24:00.000Z",
+    "cajaId": "caja-2026-06-25-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 0,
+    "paymentRef": "E-73274329",
+    "customerName": "Bautista González",
+    "customerDni": "42287857"
+  },
+  {
+    "id": "sale-caja-2026-06-25-1-6",
+    "timestamp": "2026-06-25T16:42:00.000Z",
+    "cajaId": "caja-2026-06-25-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 10000,
+    "paymentRef": "E-61871675",
+    "customerName": "Sofía Rodríguez",
+    "customerDni": "24214216"
+  },
+  {
+    "id": "sale-caja-2026-06-25-1-7",
+    "timestamp": "2026-06-25T16:18:00.000Z",
+    "cajaId": "caja-2026-06-25-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      },
+      {
+        "category": "residente",
+        "qty": 1,
+        "price": 2500,
+        "total": 2500
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 32500,
+    "paymentRef": "E-53520835",
+    "customerName": "Emily Smith",
+    "customerDni": "36980783"
+  },
+  {
+    "id": "sale-caja-2026-06-25-1-8",
+    "timestamp": "2026-06-25T19:25:00.000Z",
+    "cajaId": "caja-2026-06-25-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      },
+      {
+        "category": "residente",
+        "qty": 3,
+        "price": 2500,
+        "total": 7500
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 37500,
+    "paymentRef": "E-43345301",
+    "customerName": "Emily Smith",
+    "customerDni": "33035810"
+  },
+  {
+    "id": "sale-caja-2026-06-26-0-0",
+    "timestamp": "2026-06-26T11:11:00.000Z",
+    "cajaId": "caja-2026-06-26-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 20000,
+    "paymentRef": "E-80489222",
+    "customerName": "Emily Smith",
+    "customerDni": "43209991"
+  },
+  {
+    "id": "sale-caja-2026-06-26-0-1",
+    "timestamp": "2026-06-26T13:10:00.000Z",
+    "cajaId": "caja-2026-06-26-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 3,
+        "price": 2500,
+        "total": 7500
+      },
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 22500,
+    "paymentRef": "E-73466261",
+    "customerName": "Bautista González",
+    "customerDni": "32086098"
+  },
+  {
+    "id": "sale-caja-2026-06-26-0-2",
+    "timestamp": "2026-06-26T13:09:00.000Z",
+    "cajaId": "caja-2026-06-26-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 10000,
+    "paymentRef": "E-44441061",
+    "customerName": "John Doe",
+    "customerDni": "23955945"
+  },
+  {
+    "id": "sale-caja-2026-06-26-0-3",
+    "timestamp": "2026-06-26T13:10:00.000Z",
+    "cajaId": "caja-2026-06-26-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 5000,
+    "paymentRef": "E-73979131",
+    "customerName": "Bautista González",
+    "customerDni": "44608676"
+  },
+  {
+    "id": "sale-caja-2026-06-26-0-4",
+    "timestamp": "2026-06-26T11:09:00.000Z",
+    "cajaId": "caja-2026-06-26-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 0,
+    "paymentRef": "E-19157855",
+    "customerName": "Esteban Quito",
+    "customerDni": "20797855"
+  },
+  {
+    "id": "sale-caja-2026-06-26-0-5",
+    "timestamp": "2026-06-26T12:03:00.000Z",
+    "cajaId": "caja-2026-06-26-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 15000,
+    "paymentRef": "E-19625411",
+    "customerName": "Esteban Quito",
+    "customerDni": "33193489"
+  },
+  {
+    "id": "sale-caja-2026-06-26-0-6",
+    "timestamp": "2026-06-26T11:26:00.000Z",
+    "cajaId": "caja-2026-06-26-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 5000,
+    "paymentRef": "E-63621314",
+    "customerName": "John Doe",
+    "customerDni": "26450883"
+  },
+  {
+    "id": "sale-caja-2026-06-26-0-7",
+    "timestamp": "2026-06-26T12:14:00.000Z",
+    "cajaId": "caja-2026-06-26-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 30000,
+    "paymentRef": "E-66080910",
+    "customerName": "Ana Martínez",
+    "customerDni": "26413029"
+  },
+  {
+    "id": "sale-caja-2026-06-26-0-8",
+    "timestamp": "2026-06-26T14:57:00.000Z",
+    "cajaId": "caja-2026-06-26-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 10000,
+    "paymentRef": "E-51900378",
+    "customerName": "Lucía Fernández",
+    "customerDni": "27002603"
+  },
+  {
+    "id": "sale-caja-2026-06-26-0-9",
+    "timestamp": "2026-06-26T13:48:00.000Z",
+    "cajaId": "caja-2026-06-26-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 30000,
+    "paymentRef": "E-69267562",
+    "customerName": "Catalina Díaz",
+    "customerDni": "20310843"
+  },
+  {
+    "id": "sale-caja-2026-06-26-0-10",
+    "timestamp": "2026-06-26T13:07:00.000Z",
+    "cajaId": "caja-2026-06-26-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 10000,
+    "paymentRef": "E-71377312",
+    "customerName": "Esteban Quito",
+    "customerDni": "42711989"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-0",
+    "timestamp": "2026-06-26T16:58:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      },
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 35000,
+    "paymentRef": "E-14332993",
+    "customerName": "Esteban Quito",
+    "customerDni": "23709360"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-1",
+    "timestamp": "2026-06-26T16:35:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 10000,
+    "paymentRef": "E-58248178",
+    "customerName": "Pedro Chubut",
+    "customerDni": "24684704"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-2",
+    "timestamp": "2026-06-26T16:54:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 10000,
+    "paymentRef": "E-18753263",
+    "customerName": "Carlos Bianchi",
+    "customerDni": "42073322"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-3",
+    "timestamp": "2026-06-26T19:33:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      },
+      {
+        "category": "minor",
+        "qty": 3,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 5000,
+    "paymentRef": "E-89972848",
+    "customerName": "Bautista González",
+    "customerDni": "29795139"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-4",
+    "timestamp": "2026-06-26T19:49:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 3,
+        "price": 2500,
+        "total": 7500
+      },
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 17500,
+    "paymentRef": "E-37565775",
+    "customerName": "Catalina Díaz",
+    "customerDni": "41920024"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-5",
+    "timestamp": "2026-06-26T17:36:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "residente",
+        "qty": 3,
+        "price": 2500,
+        "total": 7500
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 7500,
+    "paymentRef": "E-49343388",
+    "customerName": "Carlos Bianchi",
+    "customerDni": "40571499"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-6",
+    "timestamp": "2026-06-26T17:22:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 0,
+    "paymentRef": "E-67820685",
+    "customerName": "Bautista González",
+    "customerDni": "32486304"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-7",
+    "timestamp": "2026-06-26T16:35:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      },
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 15000,
+    "paymentRef": "E-17053289",
+    "customerName": "Pierre Dupont",
+    "customerDni": "32060518"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-8",
+    "timestamp": "2026-06-26T19:24:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 2,
+        "price": 2500,
+        "total": 5000
+      },
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 35000,
+    "paymentRef": "E-82373855",
+    "customerName": "Sofía Rodríguez",
+    "customerDni": "22843293"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-9",
+    "timestamp": "2026-06-26T17:39:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 2,
+        "price": 2500,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 5000,
+    "paymentRef": "E-57890137",
+    "customerName": "Sofía Rodríguez",
+    "customerDni": "32899885"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-10",
+    "timestamp": "2026-06-26T17:15:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 0,
+    "paymentRef": "E-70112319",
+    "customerName": "Esteban Quito",
+    "customerDni": "33492453"
+  },
+  {
+    "id": "sale-caja-2026-06-26-1-11",
+    "timestamp": "2026-06-26T19:54:00.000Z",
+    "cajaId": "caja-2026-06-26-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 5000,
+    "paymentRef": "E-22353888",
+    "customerName": "Emily Smith",
+    "customerDni": "30353467"
+  },
+  {
+    "id": "sale-caja-2026-06-27-0-0",
+    "timestamp": "2026-06-27T12:15:00.000Z",
+    "cajaId": "caja-2026-06-27-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 3,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 0,
+    "paymentRef": "E-45638519",
+    "customerName": "Catalina Díaz",
+    "customerDni": "29092891"
+  },
+  {
+    "id": "sale-caja-2026-06-27-0-1",
+    "timestamp": "2026-06-27T14:11:00.000Z",
+    "cajaId": "caja-2026-06-27-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 2,
+        "price": 2500,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 5000,
+    "paymentRef": "E-31019297",
+    "customerName": "John Doe",
+    "customerDni": "43513502"
+  },
+  {
+    "id": "sale-caja-2026-06-27-0-2",
+    "timestamp": "2026-06-27T13:55:00.000Z",
+    "cajaId": "caja-2026-06-27-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 5000,
+    "paymentRef": "E-68726798",
+    "customerName": "Ana Martínez",
+    "customerDni": "27595443"
+  },
+  {
+    "id": "sale-caja-2026-06-27-0-3",
+    "timestamp": "2026-06-27T14:56:00.000Z",
+    "cajaId": "caja-2026-06-27-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 15000,
+    "paymentRef": "E-43640501",
+    "customerName": "Bautista González",
+    "customerDni": "25813681"
+  },
+  {
+    "id": "sale-caja-2026-06-27-0-4",
+    "timestamp": "2026-06-27T13:33:00.000Z",
+    "cajaId": "caja-2026-06-27-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 30000,
+    "paymentRef": "E-81176095",
+    "customerName": "Bautista González",
+    "customerDni": "21908667"
+  },
+  {
+    "id": "sale-caja-2026-06-27-0-5",
+    "timestamp": "2026-06-27T11:56:00.000Z",
+    "cajaId": "caja-2026-06-27-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 0,
+    "paymentRef": "E-76439923",
+    "customerName": "Emily Smith",
+    "customerDni": "20981116"
+  },
+  {
+    "id": "sale-caja-2026-06-27-0-6",
+    "timestamp": "2026-06-27T13:55:00.000Z",
+    "cajaId": "caja-2026-06-27-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 3,
+        "price": 2500,
+        "total": 7500
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 7500,
+    "paymentRef": "E-20935317",
+    "customerName": "Catalina Díaz",
+    "customerDni": "32677475"
+  },
+  {
+    "id": "sale-caja-2026-06-27-0-7",
+    "timestamp": "2026-06-27T11:14:00.000Z",
+    "cajaId": "caja-2026-06-27-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 20000,
+    "paymentRef": "E-15918156",
+    "customerName": "Mateo López",
+    "customerDni": "35593697"
+  },
+  {
+    "id": "sale-caja-2026-06-27-0-8",
+    "timestamp": "2026-06-27T13:15:00.000Z",
+    "cajaId": "caja-2026-06-27-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 30000,
+    "paymentRef": "E-47251507",
+    "customerName": "Pierre Dupont",
+    "customerDni": "30974875"
+  },
+  {
+    "id": "sale-caja-2026-06-27-0-9",
+    "timestamp": "2026-06-27T13:32:00.000Z",
+    "cajaId": "caja-2026-06-27-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 10000,
+    "paymentRef": "E-83640476",
+    "customerName": "Catalina Díaz",
+    "customerDni": "32154880"
+  },
+  {
+    "id": "sale-caja-2026-06-27-1-0",
+    "timestamp": "2026-06-27T16:23:00.000Z",
+    "cajaId": "caja-2026-06-27-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 5000,
+    "paymentRef": "E-48593569",
+    "customerName": "Esteban Quito",
+    "customerDni": "34866699"
+  },
+  {
+    "id": "sale-caja-2026-06-27-1-1",
+    "timestamp": "2026-06-27T17:31:00.000Z",
+    "cajaId": "caja-2026-06-27-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 30000,
+    "paymentRef": "E-48941115",
+    "customerName": "John Doe",
+    "customerDni": "27026820"
+  },
+  {
+    "id": "sale-caja-2026-06-27-1-2",
+    "timestamp": "2026-06-27T18:19:00.000Z",
+    "cajaId": "caja-2026-06-27-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      },
+      {
+        "category": "residente",
+        "qty": 1,
+        "price": 2500,
+        "total": 2500
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 17500,
+    "paymentRef": "E-61915924",
+    "customerName": "Carlos Bianchi",
+    "customerDni": "40258910"
+  },
+  {
+    "id": "sale-caja-2026-06-27-1-3",
+    "timestamp": "2026-06-27T18:20:00.000Z",
+    "cajaId": "caja-2026-06-27-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 5000,
+    "paymentRef": "E-52682338",
+    "customerName": "Hans Müller",
+    "customerDni": "34214727"
+  },
+  {
+    "id": "sale-caja-2026-06-27-1-4",
+    "timestamp": "2026-06-27T16:17:00.000Z",
+    "cajaId": "caja-2026-06-27-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 0,
+    "paymentRef": "E-37206296",
+    "customerName": "Emily Smith",
+    "customerDni": "32217220"
+  },
+  {
+    "id": "sale-caja-2026-06-27-1-5",
+    "timestamp": "2026-06-27T19:38:00.000Z",
+    "cajaId": "caja-2026-06-27-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 2,
+        "price": 2500,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 5000,
+    "paymentRef": "E-44505707",
+    "customerName": "Hans Müller",
+    "customerDni": "40593471"
+  },
+  {
+    "id": "sale-caja-2026-06-28-0-0",
+    "timestamp": "2026-06-28T11:37:00.000Z",
+    "cajaId": "caja-2026-06-28-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "residente",
+        "qty": 3,
+        "price": 2500,
+        "total": 7500
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 7500,
+    "paymentRef": "E-62531796",
+    "customerName": "Lucía Fernández",
+    "customerDni": "34159952"
+  },
+  {
+    "id": "sale-caja-2026-06-28-0-1",
+    "timestamp": "2026-06-28T13:02:00.000Z",
+    "cajaId": "caja-2026-06-28-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 3,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 30000,
+    "paymentRef": "E-38236802",
+    "customerName": "Emily Smith",
+    "customerDni": "37745537"
+  },
+  {
+    "id": "sale-caja-2026-06-28-0-2",
+    "timestamp": "2026-06-28T12:49:00.000Z",
+    "cajaId": "caja-2026-06-28-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 20000,
+    "paymentRef": "E-37900999",
+    "customerName": "John Doe",
+    "customerDni": "34982266"
+  },
+  {
+    "id": "sale-caja-2026-06-28-0-3",
+    "timestamp": "2026-06-28T14:50:00.000Z",
+    "cajaId": "caja-2026-06-28-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      },
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 45000,
+    "paymentRef": "E-68616460",
+    "customerName": "Ana Martínez",
+    "customerDni": "27214617"
+  },
+  {
+    "id": "sale-caja-2026-06-28-0-4",
+    "timestamp": "2026-06-28T11:22:00.000Z",
+    "cajaId": "caja-2026-06-28-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 2,
+        "price": 2500,
+        "total": 5000
+      },
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 15000,
+    "paymentRef": "E-61175625",
+    "customerName": "Ana Martínez",
+    "customerDni": "38491326"
+  },
+  {
+    "id": "sale-caja-2026-06-28-0-5",
+    "timestamp": "2026-06-28T12:41:00.000Z",
+    "cajaId": "caja-2026-06-28-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      },
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 15000,
+    "paymentRef": "E-72250465",
+    "customerName": "Ana Martínez",
+    "customerDni": "42333584"
+  },
+  {
+    "id": "sale-caja-2026-06-28-0-6",
+    "timestamp": "2026-06-28T14:44:00.000Z",
+    "cajaId": "caja-2026-06-28-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 20000,
+    "paymentRef": "E-24292043",
+    "customerName": "Esteban Quito",
+    "customerDni": "21532009"
+  },
+  {
+    "id": "sale-caja-2026-06-28-0-7",
+    "timestamp": "2026-06-28T14:22:00.000Z",
+    "cajaId": "caja-2026-06-28-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      },
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 5000,
+    "paymentRef": "E-42088532",
+    "customerName": "Sofía Rodríguez",
+    "customerDni": "32741230"
+  },
+  {
+    "id": "sale-caja-2026-06-28-0-8",
+    "timestamp": "2026-06-28T12:25:00.000Z",
+    "cajaId": "caja-2026-06-28-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 30000,
+    "paymentRef": "E-37880314",
+    "customerName": "Pierre Dupont",
+    "customerDni": "43715462"
+  },
+  {
+    "id": "sale-caja-2026-06-28-0-9",
+    "timestamp": "2026-06-28T13:35:00.000Z",
+    "cajaId": "caja-2026-06-28-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      },
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 45000,
+    "paymentRef": "E-65675702",
+    "customerName": "John Doe",
+    "customerDni": "44952214"
+  },
+  {
+    "id": "sale-caja-2026-06-28-0-10",
+    "timestamp": "2026-06-28T12:22:00.000Z",
+    "cajaId": "caja-2026-06-28-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 30000,
+    "paymentRef": "E-91688440",
+    "customerName": "Carlos Bianchi",
+    "customerDni": "32471080"
+  },
+  {
+    "id": "sale-caja-2026-06-28-1-0",
+    "timestamp": "2026-06-28T18:00:00.000Z",
+    "cajaId": "caja-2026-06-28-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 15000,
+    "paymentRef": "E-26760978",
+    "customerName": "Sofía Rodríguez",
+    "customerDni": "20018428"
+  },
+  {
+    "id": "sale-caja-2026-06-28-1-1",
+    "timestamp": "2026-06-28T17:33:00.000Z",
+    "cajaId": "caja-2026-06-28-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 20000,
+    "paymentRef": "E-54156671",
+    "customerName": "Hans Müller",
+    "customerDni": "27348692"
+  },
+  {
+    "id": "sale-caja-2026-06-28-1-2",
+    "timestamp": "2026-06-28T19:14:00.000Z",
+    "cajaId": "caja-2026-06-28-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 10000,
+    "paymentRef": "E-72938687",
+    "customerName": "Lucía Fernández",
+    "customerDni": "27488398"
+  },
+  {
+    "id": "sale-caja-2026-06-28-1-3",
+    "timestamp": "2026-06-28T18:26:00.000Z",
+    "cajaId": "caja-2026-06-28-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      },
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 25000,
+    "paymentRef": "E-37058539",
+    "customerName": "Yuki Tanaka",
+    "customerDni": "20345971"
+  },
+  {
+    "id": "sale-caja-2026-06-28-1-4",
+    "timestamp": "2026-06-28T17:59:00.000Z",
+    "cajaId": "caja-2026-06-28-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      },
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 15000,
+    "paymentRef": "E-92895205",
+    "customerName": "Hans Müller",
+    "customerDni": "40765227"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-0",
+    "timestamp": "2026-06-29T13:30:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 10000,
+    "paymentRef": "E-47621790",
+    "customerName": "Bautista González",
+    "customerDni": "40709059"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-1",
+    "timestamp": "2026-06-29T13:34:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 5000,
+    "paymentRef": "E-56408632",
+    "customerName": "Esteban Quito",
+    "customerDni": "24072614"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-2",
+    "timestamp": "2026-06-29T11:42:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "residente",
+        "qty": 3,
+        "price": 2500,
+        "total": 7500
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 7500,
+    "paymentRef": "E-48080765",
+    "customerName": "Emily Smith",
+    "customerDni": "24606836"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-3",
+    "timestamp": "2026-06-29T12:21:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "residente",
+        "qty": 2,
+        "price": 2500,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 5000,
+    "paymentRef": "E-19612710",
+    "customerName": "Ana Martínez",
+    "customerDni": "43935377"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-4",
+    "timestamp": "2026-06-29T12:30:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      },
+      {
+        "category": "minor",
+        "qty": 3,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 10000,
+    "paymentRef": "E-88282836",
+    "customerName": "Emily Smith",
+    "customerDni": "44421584"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-5",
+    "timestamp": "2026-06-29T13:26:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 30000,
+    "paymentRef": "E-11208876",
+    "customerName": "John Doe",
+    "customerDni": "28830278"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-6",
+    "timestamp": "2026-06-29T12:28:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 30000,
+    "paymentRef": "E-26733199",
+    "customerName": "Ana Martínez",
+    "customerDni": "31592240"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-7",
+    "timestamp": "2026-06-29T12:23:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      },
+      {
+        "category": "minor",
+        "qty": 3,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 20000,
+    "paymentRef": "E-81124244",
+    "customerName": "Sofía Rodríguez",
+    "customerDni": "29925831"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-8",
+    "timestamp": "2026-06-29T12:59:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 20000,
+    "paymentRef": "E-38724941",
+    "customerName": "Pedro Chubut",
+    "customerDni": "26715672"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-9",
+    "timestamp": "2026-06-29T13:31:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 10000,
+    "paymentRef": "E-49361151",
+    "customerName": "Emily Smith",
+    "customerDni": "34335360"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-10",
+    "timestamp": "2026-06-29T11:52:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 5000,
+    "paymentRef": "E-54583272",
+    "customerName": "Lucía Fernández",
+    "customerDni": "33516422"
+  },
+  {
+    "id": "sale-caja-2026-06-29-0-11",
+    "timestamp": "2026-06-29T12:30:00.000Z",
+    "cajaId": "caja-2026-06-29-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 1,
+        "price": 2500,
+        "total": 2500
+      },
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 2500,
+    "paymentRef": "E-21807777",
+    "customerName": "Pedro Chubut",
+    "customerDni": "33896373"
+  },
+  {
+    "id": "sale-caja-2026-06-29-1-0",
+    "timestamp": "2026-06-29T19:48:00.000Z",
+    "cajaId": "caja-2026-06-29-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 2,
+        "price": 2500,
+        "total": 5000
+      },
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 15000,
+    "paymentRef": "E-69398314",
+    "customerName": "Lucía Fernández",
+    "customerDni": "41001808"
+  },
+  {
+    "id": "sale-caja-2026-06-29-1-1",
+    "timestamp": "2026-06-29T16:43:00.000Z",
+    "cajaId": "caja-2026-06-29-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      },
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 10000,
+    "paymentRef": "E-73544640",
+    "customerName": "Emily Smith",
+    "customerDni": "44382158"
+  },
+  {
+    "id": "sale-caja-2026-06-29-1-2",
+    "timestamp": "2026-06-29T19:12:00.000Z",
+    "cajaId": "caja-2026-06-29-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      },
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 35000,
+    "paymentRef": "E-28268491",
+    "customerName": "Carlos Bianchi",
+    "customerDni": "20741015"
+  },
+  {
+    "id": "sale-caja-2026-06-29-1-3",
+    "timestamp": "2026-06-29T17:33:00.000Z",
+    "cajaId": "caja-2026-06-29-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 10000,
+    "paymentRef": "E-59096745",
+    "customerName": "Ana Martínez",
+    "customerDni": "22909944"
+  },
+  {
+    "id": "sale-caja-2026-06-29-1-4",
+    "timestamp": "2026-06-29T18:08:00.000Z",
+    "cajaId": "caja-2026-06-29-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 30000,
+    "paymentRef": "E-16964212",
+    "customerName": "Bautista González",
+    "customerDni": "22200051"
+  },
+  {
+    "id": "sale-caja-2026-06-29-1-5",
+    "timestamp": "2026-06-29T16:19:00.000Z",
+    "cajaId": "caja-2026-06-29-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 3,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 0,
+    "paymentRef": "E-20606869",
+    "customerName": "Esteban Quito",
+    "customerDni": "43702056"
+  },
+  {
+    "id": "sale-caja-2026-06-29-1-6",
+    "timestamp": "2026-06-29T18:43:00.000Z",
+    "cajaId": "caja-2026-06-29-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      },
+      {
+        "category": "residente",
+        "qty": 3,
+        "price": 2500,
+        "total": 7500
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 27500,
+    "paymentRef": "E-33989569",
+    "customerName": "Catalina Díaz",
+    "customerDni": "43689801"
+  },
+  {
+    "id": "sale-caja-2026-06-29-1-7",
+    "timestamp": "2026-06-29T19:48:00.000Z",
+    "cajaId": "caja-2026-06-29-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 0,
+    "paymentRef": "E-16757765",
+    "customerName": "Catalina Díaz",
+    "customerDni": "35463501"
+  },
+  {
+    "id": "sale-caja-2026-06-29-1-8",
+    "timestamp": "2026-06-29T16:17:00.000Z",
+    "cajaId": "caja-2026-06-29-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 10000,
+    "paymentRef": "E-52494276",
+    "customerName": "Catalina Díaz",
+    "customerDni": "35294171"
+  },
+  {
+    "id": "sale-caja-2026-06-30-0-0",
+    "timestamp": "2026-06-30T11:08:00.000Z",
+    "cajaId": "caja-2026-06-30-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 1,
+        "price": 10000,
+        "total": 10000
+      },
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Débito",
+    "totalAmount": 25000,
+    "paymentRef": "E-47772699",
+    "customerName": "John Doe",
+    "customerDni": "42084394"
+  },
+  {
+    "id": "sale-caja-2026-06-30-0-1",
+    "timestamp": "2026-06-30T13:41:00.000Z",
+    "cajaId": "caja-2026-06-30-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 10000,
+    "paymentRef": "E-90641708",
+    "customerName": "Bautista González",
+    "customerDni": "33285860"
+  },
+  {
+    "id": "sale-caja-2026-06-30-0-2",
+    "timestamp": "2026-06-30T12:24:00.000Z",
+    "cajaId": "caja-2026-06-30-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 2,
+        "price": 0,
+        "total": 0
+      },
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 5000,
+    "paymentRef": "E-44187573",
+    "customerName": "Esteban Quito",
+    "customerDni": "25545665"
+  },
+  {
+    "id": "sale-caja-2026-06-30-0-3",
+    "timestamp": "2026-06-30T11:56:00.000Z",
+    "cajaId": "caja-2026-06-30-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 5000,
+    "paymentRef": "E-53175603",
+    "customerName": "Pierre Dupont",
+    "customerDni": "26736672"
+  },
+  {
+    "id": "sale-caja-2026-06-30-0-4",
+    "timestamp": "2026-06-30T12:13:00.000Z",
+    "cajaId": "caja-2026-06-30-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 1,
+        "price": 5000,
+        "total": 5000
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 5000,
+    "paymentRef": "E-59836336",
+    "customerName": "Lucía Fernández",
+    "customerDni": "32055771"
+  },
+  {
+    "id": "sale-caja-2026-06-30-0-5",
+    "timestamp": "2026-06-30T13:32:00.000Z",
+    "cajaId": "caja-2026-06-30-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 3,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 0,
+    "paymentRef": "E-23308255",
+    "customerName": "Emily Smith",
+    "customerDni": "26316792"
+  },
+  {
+    "id": "sale-caja-2026-06-30-0-6",
+    "timestamp": "2026-06-30T13:28:00.000Z",
+    "cajaId": "caja-2026-06-30-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "minor",
+        "qty": 1,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Mercado Pago",
+    "totalAmount": 0,
+    "paymentRef": "E-72116039",
+    "customerName": "Bautista González",
+    "customerDni": "35679503"
+  },
+  {
+    "id": "sale-caja-2026-06-30-0-7",
+    "timestamp": "2026-06-30T13:38:00.000Z",
+    "cajaId": "caja-2026-06-30-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 20000,
+    "paymentRef": "E-27005613",
+    "customerName": "Ana Martínez",
+    "customerDni": "42018262"
+  },
+  {
+    "id": "sale-caja-2026-06-30-0-8",
+    "timestamp": "2026-06-30T13:16:00.000Z",
+    "cajaId": "caja-2026-06-30-0",
+    "userId": "usr-2",
+    "userName": "Juan Pérez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 15000,
+    "paymentRef": "E-63119487",
+    "customerName": "Pierre Dupont",
+    "customerDni": "35359808"
+  },
+  {
+    "id": "sale-caja-2026-06-30-1-0",
+    "timestamp": "2026-06-30T18:22:00.000Z",
+    "cajaId": "caja-2026-06-30-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      },
+      {
+        "category": "nacional",
+        "qty": 3,
+        "price": 5000,
+        "total": 15000
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 35000,
+    "paymentRef": "E-14035689",
+    "customerName": "Pedro Chubut",
+    "customerDni": "26893200"
+  },
+  {
+    "id": "sale-caja-2026-06-30-1-1",
+    "timestamp": "2026-06-30T18:03:00.000Z",
+    "cajaId": "caja-2026-06-30-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 3,
+        "price": 2500,
+        "total": 7500
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 7500,
+    "paymentRef": "E-47996158",
+    "customerName": "Emily Smith",
+    "customerDni": "25147411"
+  },
+  {
+    "id": "sale-caja-2026-06-30-1-2",
+    "timestamp": "2026-06-30T19:18:00.000Z",
+    "cajaId": "caja-2026-06-30-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "residente",
+        "qty": 3,
+        "price": 2500,
+        "total": 7500
+      },
+      {
+        "category": "minor",
+        "qty": 3,
+        "price": 0,
+        "total": 0
+      }
+    ],
+    "paymentMethod": "Transferencia",
+    "totalAmount": 7500,
+    "paymentRef": "E-84312084",
+    "customerName": "Catalina Díaz",
+    "customerDni": "26671293"
+  },
+  {
+    "id": "sale-caja-2026-06-30-1-3",
+    "timestamp": "2026-06-30T17:12:00.000Z",
+    "cajaId": "caja-2026-06-30-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "extranjero",
+        "qty": 3,
+        "price": 10000,
+        "total": 30000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 40000,
+    "paymentRef": "E-72356597",
+    "customerName": "Lucía Fernández",
+    "customerDni": "29023826"
+  },
+  {
+    "id": "sale-caja-2026-06-30-1-4",
+    "timestamp": "2026-06-30T18:24:00.000Z",
+    "cajaId": "caja-2026-06-30-1",
+    "userId": "usr-3",
+    "userName": "María Gómez",
+    "items": [
+      {
+        "category": "nacional",
+        "qty": 2,
+        "price": 5000,
+        "total": 10000
+      },
+      {
+        "category": "extranjero",
+        "qty": 2,
+        "price": 10000,
+        "total": 20000
+      }
+    ],
+    "paymentMethod": "Tarjeta de Crédito",
+    "totalAmount": 30000,
+    "paymentRef": "E-51555743",
+    "customerName": "Mateo López",
+    "customerDni": "27268980"
+  }
+]

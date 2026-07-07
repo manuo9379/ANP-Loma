@@ -16,6 +16,7 @@ import {
   RefreshCw,
   Award
 } from 'lucide-react';
+import { adminService, ticketService } from '../services/apiService';
 
 interface TicketVentaProps {
   token: string;
@@ -59,17 +60,14 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
   // Fetch current ticket prices from settings
   const fetchPrices = async () => {
     try {
-      const response = await fetch('/api/settings/prices');
-      if (response.ok) {
-        const data = await response.json();
-        setPrices(data);
-        setCart(prev => ({
-          extranjero: { ...prev.extranjero, price: data.extranjero },
-          nacional: { ...prev.nacional, price: data.nacional },
-          residente: { ...prev.residente, price: data.residente },
-          minor: { ...prev.minor, price: data.minor }
-        }));
-      }
+      const data = await adminService.getPrices();
+      setPrices(data);
+      setCart(prev => ({
+        extranjero: { ...prev.extranjero, price: data.extranjero },
+        nacional: { ...prev.nacional, price: data.nacional },
+        residente: { ...prev.residente, price: data.residente },
+        minor: { ...prev.minor, price: data.minor }
+      }));
     } catch (err) {
       console.error('Error loading current prices:', err);
     }
@@ -79,7 +77,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
     fetchPrices();
   }, []);
 
-  const updateQuantity = (category: keyof PriceSettings, delta: number) => {
+  const updateQuantity = React.useCallback((category: keyof PriceSettings, delta: number) => {
     setCart(prev => {
       const current = prev[category];
       const newQty = Math.max(0, current.qty + delta);
@@ -103,9 +101,9 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
         }
       };
     });
-  };
+  }, []);
 
-  const handleHolderChange = (category: string, index: number, field: 'residence', value: string) => {
+  const handleHolderChange = React.useCallback((category: string, index: number, field: 'residence', value: string) => {
     setCart(prev => {
       const current = prev[category];
       const newHolders = [...current.holders];
@@ -121,15 +119,20 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
         }
       };
     });
-  };
+  }, []);
 
   const getCartItems = (): SaleCartItem[] => {
     return Object.values(cart) as unknown as SaleCartItem[];
   };
 
-  // Get total cart summary
-  const totalTickets = getCartItems().reduce((acc, item) => acc + item.qty, 0);
-  const totalAmount = getCartItems().reduce((acc, item) => acc + (item.qty * item.price), 0);
+  // Get total cart summary (memoized)
+  const totalTickets = React.useMemo(() => {
+    return Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
+  }, [cart]);
+
+  const totalAmount = React.useMemo(() => {
+    return Object.values(cart).reduce((acc, item) => acc + (item.qty * item.price), 0);
+  }, [cart]);
 
   const handleSell = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,13 +143,13 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
       return;
     }
 
-    if (!customerResidence.trim()) {
-      setError('El País y Ciudad de residencia es un dato obligatorio.');
+    if (!customerResidence.trim() || customerResidence.trim().length < 3) {
+      setError('El País y Ciudad de residencia debe tener al menos 3 caracteres.');
       return;
     }
 
-    if (!paymentRef.trim()) {
-      setError('Debe ingresar la Referencia de Pago Electrónico de la pasarela.');
+    if (!paymentRef.trim() || paymentRef.trim().length < 3) {
+      setError('La Referencia de Pago Electrónico debe tener al menos 3 caracteres.');
       return;
     }
 
@@ -170,26 +173,14 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
       });
 
     try {
-      const response = await fetch('/api/tickets/sell', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          items: itemsPayload,
-          paymentMethod,
-          paymentRef,
-          customerName: customerResidence,
-          customerDni: '',
-          customerResidence
-        })
+      const data = await ticketService.sell(token, {
+        items: itemsPayload,
+        paymentMethod,
+        paymentRef,
+        customerName: customerResidence,
+        customerDni: '',
+        customerResidence
       });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al procesar la venta.');
-      }
 
       setSoldTickets(data.tickets);
       
@@ -281,6 +272,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
             </div>
             <button
               onClick={() => setSoldTickets(null)}
+              data-testid="venta-new-sale-btn"
               className="ml-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-xs transition-colors cursor-pointer"
             >
               Nueva Venta
@@ -291,6 +283,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
           <div className="flex gap-3 justify-end noprint">
             <button
               onClick={handlePrintTickets}
+              data-testid="venta-print-all-btn"
               className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition-all flex items-center gap-2 cursor-pointer"
             >
               <Printer className="w-4 h-4" />
@@ -357,6 +350,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                       />
                       <button
                         onClick={() => handleDownloadQr(ticket.qrDataUrl!, ticket.ticketCode)}
+                        data-testid={`venta-download-qr-btn-${ticket.ticketCode}`}
                         className="mt-3 text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-lg transition-colors cursor-pointer noprint"
                       >
                         <Download className="w-3.5 h-3.5" />
@@ -399,6 +393,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                     <button
                       type="button"
                       onClick={() => updateQuantity('extranjero', -1)}
+                      data-testid="venta-qty-minus-extranjero"
                       className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer"
                     >
                       <Minus className="w-4 h-4" />
@@ -409,6 +404,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                     <button
                       type="button"
                       onClick={() => updateQuantity('extranjero', 1)}
+                      data-testid="venta-qty-plus-extranjero"
                       className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer"
                     >
                       <Plus className="w-4 h-4" />
@@ -427,6 +423,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                     <button
                       type="button"
                       onClick={() => updateQuantity('nacional', -1)}
+                      data-testid="venta-qty-minus-nacional"
                       className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer"
                     >
                       <Minus className="w-4 h-4" />
@@ -437,6 +434,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                     <button
                       type="button"
                       onClick={() => updateQuantity('nacional', 1)}
+                      data-testid="venta-qty-plus-nacional"
                       className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer"
                     >
                       <Plus className="w-4 h-4" />
@@ -455,6 +453,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                     <button
                       type="button"
                       onClick={() => updateQuantity('residente', -1)}
+                      data-testid="venta-qty-minus-residente"
                       className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer"
                     >
                       <Minus className="w-4 h-4" />
@@ -465,6 +464,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                     <button
                       type="button"
                       onClick={() => updateQuantity('residente', 1)}
+                      data-testid="venta-qty-plus-residente"
                       className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer"
                     >
                       <Plus className="w-4 h-4" />
@@ -483,6 +483,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                     <button
                       type="button"
                       onClick={() => updateQuantity('minor', -1)}
+                      data-testid="venta-qty-minus-minor"
                       className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer"
                     >
                       <Minus className="w-4 h-4" />
@@ -493,6 +494,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                     <button
                       type="button"
                       onClick={() => updateQuantity('minor', 1)}
+                      data-testid="venta-qty-plus-minor"
                       className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer"
                     >
                       <Plus className="w-4 h-4" />
@@ -527,6 +529,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                         <div className="grid grid-cols-1 gap-3">
                           <input
                             type="text"
+                            data-testid={`venta-holder-residence-${item.category}-${idx}`}
                             placeholder="País y Ciudad de Residencia"
                             value={holder.residence}
                             onChange={(e) => handleHolderChange(item.category, idx, 'residence', e.target.value)}
@@ -573,6 +576,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                       </span>
                       <input
                         type="text"
+                        data-testid="venta-customer-residence"
                         value={customerResidence}
                         onChange={(e) => setCustomerResidence(e.target.value)}
                         className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all"
@@ -602,6 +606,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                       <button
                         key={method.id}
                         type="button"
+                        data-testid={`venta-paymethod-${method.id}`}
                         onClick={() => setPaymentMethod(method.id as any)}
                         className={`py-2 px-3 border rounded-xl flex items-center gap-1.5 justify-start text-left transition-all cursor-pointer ${
                           paymentMethod === method.id 
@@ -624,6 +629,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
                   </label>
                   <input
                     type="text"
+                    data-testid="venta-payment-ref"
                     value={paymentRef}
                     onChange={(e) => setPaymentRef(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-mono"
@@ -650,6 +656,7 @@ export default function TicketVenta({ token, openCaja, onNavigateToCaja }: Ticke
 
               <button
                 id="sell_submit_btn"
+                data-testid="venta-submit-btn"
                 type="submit"
                 disabled={loading}
                 className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-medium rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"

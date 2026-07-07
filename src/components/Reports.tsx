@@ -32,6 +32,7 @@ import {
   RefreshCw,
   Clock
 } from 'lucide-react';
+import { reportsService } from '../services/apiService';
 
 interface ReportsProps {
   token: string;
@@ -71,11 +72,7 @@ export default function Reports({ token }: ReportsProps) {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/reports/daily?date=${selectedDate}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Error al cargar reporte diario');
+      const data = await reportsService.getDailyStats(token, selectedDate);
       setDailyStats(data);
     } catch (err: any) {
       setError(err.message);
@@ -86,21 +83,19 @@ export default function Reports({ token }: ReportsProps) {
 
   const fetchGeneralStats = async () => {
     try {
-      const response = await fetch('/api/reports/stats', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setGeneralStats(data);
-      }
+      const data = await reportsService.getGeneralStats(token);
+      setGeneralStats(data);
     } catch (err) {
       console.error('Error fetching general stats:', err);
     }
   };
 
   useEffect(() => {
-    fetchDailyStats();
     fetchGeneralStats();
+  }, []);
+
+  useEffect(() => {
+    fetchDailyStats();
   }, [selectedDate]);
 
   const handlePrintDaily = () => {
@@ -136,6 +131,7 @@ export default function Reports({ token }: ReportsProps) {
           <Calendar className="w-4 h-4 text-slate-400 ml-2" />
           <input
             id="reports_date_picker"
+            data-testid="reports-date-picker"
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
@@ -145,7 +141,28 @@ export default function Reports({ token }: ReportsProps) {
       </div>
 
       {/* --- SECTION 1: DAILY STATS (PRINT FRIENDLY) --- */}
-      {dailyStats && (
+      {loading && !dailyStats ? (
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(n => (
+              <div key={n} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-5 h-28 animate-skeleton space-y-3">
+                <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-2/3 animate-pulse"></div>
+                <div className="h-6 bg-slate-100 dark:bg-slate-800 rounded w-1/2 animate-pulse"></div>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 h-48 animate-skeleton space-y-3">
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/3 animate-pulse"></div>
+              <div className="h-32 bg-slate-100 dark:bg-slate-800 rounded animate-pulse"></div>
+            </div>
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 h-48 animate-skeleton space-y-3">
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/3 animate-pulse"></div>
+              <div className="h-32 bg-slate-100 dark:bg-slate-800 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      ) : dailyStats && (
         <div className="space-y-6">
           <div className="flex justify-between items-center border-b border-slate-100 pb-2">
             <h3 className="font-display font-bold text-slate-800 text-lg flex items-center gap-2">
@@ -154,6 +171,7 @@ export default function Reports({ token }: ReportsProps) {
             </h3>
             <button
               onClick={handlePrintDaily}
+              data-testid="reports-print-btn"
               className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition-all flex items-center gap-2 cursor-pointer noprint"
             >
               <Printer className="w-4 h-4" />
@@ -442,8 +460,24 @@ export default function Reports({ token }: ReportsProps) {
 
           </div>
         ) : (
-          <div className="text-center py-12 bg-slate-50 border border-slate-100 rounded-2xl text-slate-400 text-sm">
-            Cargando gráficos e indicadores históricos...
+          <div className="space-y-6">
+            {/* Skeleton Area Chart */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 h-72 animate-skeleton space-y-4">
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/4 animate-pulse"></div>
+              <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded w-1/3 animate-pulse"></div>
+              <div className="h-32 bg-slate-100/50 dark:bg-slate-800/50 rounded-xl w-full animate-pulse"></div>
+            </div>
+            {/* Skeleton grid of charts */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 h-64 animate-skeleton space-y-3">
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/3 animate-pulse"></div>
+                <div className="h-full bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse"></div>
+              </div>
+              <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 h-64 animate-skeleton space-y-3">
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/3 animate-pulse"></div>
+                <div className="h-full bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse"></div>
+              </div>
+            </div>
           </div>
         )}
       </div>

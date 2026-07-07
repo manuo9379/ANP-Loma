@@ -1,0 +1,26 @@
+[
+  {
+    "id": "usr-1",
+    "username": "admin",
+    "password": "admin123",
+    "role": "admin",
+    "name": "Administrador de Área",
+    "active": true
+  },
+  {
+    "id": "usr-2",
+    "username": "cajero1",
+    "password": "cajero123",
+    "role": "cajero",
+    "name": "Juan Pérez",
+    "active": true
+  },
+  {
+    "id": "usr-3",
+    "username": "cajero2",
+    "password": "cajero123",
+    "role": "cajero",
+    "name": "María Gómez",
+    "active": true
+  }
+]
